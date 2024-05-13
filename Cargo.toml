@@ -3,6 +3,31 @@ name = "arcemedia-engine"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib"]
 
 [dependencies]
+wasm-bindgen = "0.2.92"
+js-sys = "0.3.69"
+wasm-bindgen-futures = "0.4.42"
+
+[dependencies.web-sys]
+version = "0.3.4"
+features = [
+    "Document",
+    "Element",
+    "HtmlCanvasElement",
+    "WebGlBuffer",
+    "WebGlVertexArrayObject",
+    "WebGl2RenderingContext",
+    "WebGlProgram",
+    "WebGlShader",
+    "Window",
+    "WebGlUniformLocation",
+    'Headers',
+    'Request',
+    'RequestInit',
+    'RequestMode',
+    'Response',
+    "console"
+]
