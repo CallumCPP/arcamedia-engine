@@ -1,34 +1,46 @@
-use crate::shader::Shader;
+use crate::object::rect::Rect;
+use crate::object::Object;
+use std::time::Duration;
 use wasm_bindgen::prelude::*;
 use web_sys::WebGl2RenderingContext;
-use crate::object::Object;
+use crate::camera::Camera;
+use crate::shader_manager::{ShaderManager, sm};
 
 #[macro_use]
 mod web;
 mod gl_objects;
 mod object;
 mod shader;
+mod camera;
+mod shader_manager;
+
+static mut GL: Option<Box<WebGl2RenderingContext>> = None;
 
 #[wasm_bindgen(start)]
 async fn run() -> Result<(), JsValue> {
-    let gl = init_webgl();
+    let tmp_gl = Box::new(init_webgl());
 
-    gl.create_vertex_array();
+    unsafe {
+        GL = Some(tmp_gl);
+    }
 
-    let vert_src = web::get_string("/shaders/vertex.txt").await.unwrap();
-    let frag_src = web::get_string("/shaders/fragment.txt").await.unwrap();
+    ShaderManager::init();
 
-    let shader = Shader::new(&gl, vert_src.as_str(), frag_src.as_str())?;
-    shader.bind();
+    let mut objects: Vec<Box<dyn Object>> = Vec::new();
 
-    let vertices = vec![-0.7, -0.7, 0.7, -0.7, 0.0, 0.7];
+    let rect1 = Rect::new([-100.0, -100.0], [1.0, 1.0], 2.0, [0.0, 1.0, 0.0, 1.0]);
+    objects.push(Box::new(rect1));
 
-    let mut objects: Vec<Object> = Vec::new();
+    let rect2 = Rect::new([-1000.0, 500.0], [0.5, 0.5], 1.0, [1.0, 0.0, 0.0, 1.0]);
+    objects.push(Box::new(rect2));
 
-    let tri1 = Object::new(&gl, &vertices, &shader, [0.0, 1.0, 0.0, 1.0]);
-    objects.push(tri1);
-    
-    draw(&gl, &objects);
+    let camera = Camera::new([1000.0, 100.0], 1.0);
+
+    loop {
+        sm().update_camera(&camera);
+        tick(&mut objects);
+        async_std::task::sleep(Duration::from_millis(100)).await;
+    }
 
     Ok(())
 }
@@ -46,11 +58,16 @@ fn init_webgl() -> WebGl2RenderingContext {
         .unwrap()
 }
 
-fn draw(gl: &WebGl2RenderingContext, objects: &Vec<Object>) {
-    gl.clear_color(0.0, 0.0, 0.0, 1.0);
-    gl.clear(WebGl2RenderingContext::COLOR_BUFFER_BIT);
+fn gl() -> &'static WebGl2RenderingContext {
+    unsafe { GL.as_deref().expect("WebGL2 Context not initialized") }
+}
 
-    for object in objects {
+fn tick(objects: &mut Vec<Box<dyn Object>>) {
+    gl().clear_color(0.0, 0.0, 0.0, 1.0);
+    gl().clear(WebGl2RenderingContext::COLOR_BUFFER_BIT);
+
+    for object in objects.iter_mut() {
+        object.tick();
         object.draw();
     }
 }

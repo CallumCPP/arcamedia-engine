@@ -10,6 +10,9 @@ crate-type = ["cdylib"]
 wasm-bindgen = "0.2.92"
 js-sys = "0.3.69"
 wasm-bindgen-futures = "0.4.42"
+async-std = "1.12.0"
+futures = "0.3.30"
+console = "0.15.8"
 
 [dependencies.web-sys]
 version = "0.3.4"
@@ -29,5 +32,5 @@ features = [
     'RequestInit',
     'RequestMode',
     'Response',
-    "console"
+    "console",
 ]

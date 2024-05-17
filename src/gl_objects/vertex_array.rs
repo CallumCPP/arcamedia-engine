@@ -1,20 +1,20 @@
+use crate::gl;
 use crate::gl_objects::vertex_buffer::VertexBuffer;
 use web_sys::{WebGl2RenderingContext, WebGlVertexArrayObject};
 
-pub struct VertexArray<'a> {
-    gl: &'a WebGl2RenderingContext,
+pub struct VertexArray {
     gl_vao: WebGlVertexArrayObject,
 }
 
-impl<'a> VertexArray<'a> {
-    pub fn new(gl: &'a WebGl2RenderingContext) -> VertexArray<'a> {
-        let gl_vao = gl.create_vertex_array().unwrap();
+impl VertexArray {
+    pub fn new() -> VertexArray {
+        let gl_vao = gl().create_vertex_array().unwrap();
 
-        Self { gl, gl_vao }
+        Self { gl_vao }
     }
 
     pub fn bind(&self) {
-        self.gl.bind_vertex_array(Some(&self.gl_vao));
+        gl().bind_vertex_array(Some(&self.gl_vao));
     }
 
     pub fn attach_vertex_buffer(
@@ -29,7 +29,7 @@ impl<'a> VertexArray<'a> {
         self.bind();
         buffer.bind();
 
-        self.gl.vertex_attrib_pointer_with_i32(
+        gl().vertex_attrib_pointer_with_i32(
             location as u32,
             num_components,
             WebGl2RenderingContext::FLOAT,
@@ -37,6 +37,6 @@ impl<'a> VertexArray<'a> {
             stride,
             offset,
         );
-        self.gl.enable_vertex_attrib_array(location as u32);
+        gl().enable_vertex_attrib_array(location as u32);
     }
 }

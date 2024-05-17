@@ -1,14 +1,14 @@
+use crate::gl;
 use web_sys::{WebGl2RenderingContext, WebGlBuffer};
 
-pub struct VertexBuffer<'a> {
-    gl: &'a WebGl2RenderingContext,
+pub struct VertexBuffer {
     buffer: WebGlBuffer,
 }
 
-impl<'a> VertexBuffer<'a> {
-    pub fn new(gl: &'a WebGl2RenderingContext, vertices: &[f32]) -> VertexBuffer<'a> {
-        let buffer = gl.create_buffer().unwrap();
-        gl.bind_buffer(WebGl2RenderingContext::ARRAY_BUFFER, Some(&buffer));
+impl VertexBuffer {
+    pub fn new(vertices: &[f32]) -> VertexBuffer {
+        let buffer = gl().create_buffer().unwrap();
+        gl().bind_buffer(WebGl2RenderingContext::ARRAY_BUFFER, Some(&buffer));
 
         // Note that `Float32Array::view` is somewhat dangerous (hence the
         // `unsafe`!). This is creating a raw view into our module's
@@ -21,14 +21,14 @@ impl<'a> VertexBuffer<'a> {
         unsafe {
             let vertices_view = js_sys::Float32Array::view(vertices);
 
-            gl.buffer_data_with_array_buffer_view(
+            gl().buffer_data_with_array_buffer_view(
                 WebGl2RenderingContext::ARRAY_BUFFER,
                 &vertices_view,
                 WebGl2RenderingContext::STATIC_DRAW,
             );
         }
 
-        Self { gl, buffer }
+        Self { buffer }
     }
 
     pub fn update(&self, vertices: &[f32]) {
@@ -37,7 +37,7 @@ impl<'a> VertexBuffer<'a> {
         unsafe {
             let vertices_view = js_sys::Float32Array::view(vertices);
 
-            self.gl.buffer_data_with_array_buffer_view(
+            gl().buffer_data_with_array_buffer_view(
                 WebGl2RenderingContext::ARRAY_BUFFER,
                 &vertices_view,
                 WebGl2RenderingContext::STATIC_DRAW,
@@ -46,7 +46,6 @@ impl<'a> VertexBuffer<'a> {
     }
 
     pub fn bind(&self) {
-        self.gl
-            .bind_buffer(WebGl2RenderingContext::ARRAY_BUFFER, Some(&self.buffer));
+        gl().bind_buffer(WebGl2RenderingContext::ARRAY_BUFFER, Some(&self.buffer));
     }
 }
