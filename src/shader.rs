@@ -1,7 +1,7 @@
-use crate::gl;
-use crate::object::Transform;
-use web_sys::{WebGl2RenderingContext, WebGlProgram, WebGlShader, WebGlUniformLocation};
 use crate::camera::Camera;
+use crate::gl;
+use crate::transform::Transform;
+use web_sys::{WebGl2RenderingContext, WebGlProgram, WebGlShader, WebGlUniformLocation};
 
 #[derive(Clone)]
 pub struct Shader {
@@ -9,17 +9,19 @@ pub struct Shader {
 }
 
 impl Shader {
-    pub fn new(vert_path: &str, frag_path: &str) -> Result<Shader, String> {
+    pub async fn new(vert_path: &str, frag_path: &str) -> Result<Shader, String> {
         let vert_src = crate::web::get_string(
             (String::from("/shaders/") + &*String::from(vert_path)).as_str(),
         )
-        .expect("Should find vertex source!");
+        .await
+        .expect("Should get shader source.");
         let vert_shader = compile_shader(WebGl2RenderingContext::VERTEX_SHADER, vert_src)?;
 
         let frag_src = crate::web::get_string(
             (String::from("/shaders/") + &*String::from(frag_path)).as_str(),
         )
-        .expect("Should find fragment source!");
+        .await
+        .expect("Should get shader source.");
         let frag_shader = compile_shader(WebGl2RenderingContext::FRAGMENT_SHADER, frag_src)?;
 
         let program = link_program(&vert_shader, &frag_shader)?;
@@ -63,6 +65,10 @@ impl Shader {
 
     pub fn uniform1f(&self, name: &str, data: f32) {
         gl().uniform1f(Some(&self.get_uniform_location(name).unwrap()), data);
+    }
+
+    pub fn uniform1i(&self, name: &str, data: i32) {
+        gl().uniform1i(Some(&self.get_uniform_location(name).unwrap()), data);
     }
 }
 

@@ -1,27 +1,41 @@
-use crate::mesh::static_mesh::StaticMesh;
+use crate::mesh::dynamic_mesh_t::DynamicMeshT;
 use crate::mesh::Mesh;
 use crate::object::{Object, Transform};
 use crate::shader::Shader;
 use crate::shader_manager::sm;
+use crate::texture::Texture;
 
-pub struct Rect {
+pub struct TexturedRect<'a> {
     transform: Transform,
-    mesh: StaticMesh,
+    mesh: DynamicMeshT,
     shader: Shader,
     color: [f32; 4],
+    texture: &'a Texture,
 }
 
-impl Rect {
-    pub async fn new(position: [f32; 2], scale: [f32; 2], rotation: f32, color: [f32; 4]) -> Self {
+impl<'a> TexturedRect<'a> {
+    pub async fn new(
+        position: [f32; 2],
+        scale: [f32; 2],
+        rotation: f32,
+        color: [f32; 4],
+        texture: &'a Texture,
+    ) -> Self {
         let shader = sm()
-            .get_shader("colored_vert.glsl", "colored_frag.glsl")
+            .get_shader("textured_vert.glsl", "textured_frag.glsl")
             .await
             .clone();
 
         let transform = Transform::new(position, scale, rotation);
 
-        let mesh = StaticMesh::new(vec![
-            -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5,
+        #[rustfmt::skip]
+        let mesh = DynamicMeshT::new(vec![
+            -0.5, -0.5,  0.0, 0.0,
+             0.5, -0.5,  1.0, 0.0,
+            -0.5,  0.5,  0.0, 1.0,
+             0.5, -0.5,  1.0, 0.0,
+             0.5,  0.5,  1.0, 1.0,
+            -0.5,  0.5,  0.0, 1.0,
         ]);
 
         Self {
@@ -29,15 +43,18 @@ impl Rect {
             mesh,
             shader,
             color,
+            texture,
         }
     }
 }
 
-impl Object for Rect {
+impl<'a> Object for TexturedRect<'a> {
     fn draw(&mut self) {
         self.shader.bind();
+        self.texture.bind();
         self.shader
             .uniform4fv_with_f32_array("fragColor", self.color);
+        self.shader.uniform1i("image", 0);
         self.shader.uniform_transform(&self.transform);
 
         self.mesh.draw();

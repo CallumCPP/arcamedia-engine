@@ -8,29 +8,12 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasm-bindgen = "0.2.92"
-js-sys = "0.3.69"
 wasm-bindgen-futures = "0.4.42"
+js-sys = "0.3.69"
 async-std = "1.12.0"
-futures = "0.3.30"
 console = "0.15.8"
+image = "0.25.1"
 
 [dependencies.web-sys]
 version = "0.3.4"
-features = [
-    "Document",
-    "Element",
-    "HtmlCanvasElement",
-    "WebGlBuffer",
-    "WebGlVertexArrayObject",
-    "WebGl2RenderingContext",
-    "WebGlProgram",
-    "WebGlShader",
-    "Window",
-    "WebGlUniformLocation",
-    'Headers',
-    'Request',
-    'RequestInit',
-    'RequestMode',
-    'Response',
-    "console",
-]
+features = ["Document", "Element", "HtmlCanvasElement", "WebGlBuffer", "WebGlVertexArrayObject", "WebGl2RenderingContext", "WebGlProgram", "WebGlShader", "Window", "WebGlUniformLocation", "Headers", "Request", "RequestInit", "RequestMode", "Response", "console", "KeyboardEvent", "Performance", "WebGlTexture", "Blob", "FileReader"]

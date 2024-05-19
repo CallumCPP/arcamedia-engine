@@ -1,11 +1,25 @@
-export function getStringFromServer(url) {
-    const request = new XMLHttpRequest();
-    request.open('GET', url, false); // synchronous request
-    request.send(null);
+export async function fetchStringFromServer(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch string from server. Status code: ${response.status}`);
+        }
+        const text = await response.text();
+        return text;
+    } catch (error) {
+        throw new Error(`An error occurred: ${error.message}`);
+    }
+}
 
-    if (request.status === 200) {
-        return request.responseText;
-    } else {
-        throw new Error(`Failed to fetch string from server. Status code: ${request.status}`);
+export async function fetchBytesFromServer(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch bytes from server. Status code: ${response.status}`);
+        }
+        const arrayBuffer = await response.arrayBuffer();
+        return new Uint8Array(arrayBuffer);
+    } catch (error) {
+        throw new Error(`An error occurred: ${error.message}`);
     }
 }
