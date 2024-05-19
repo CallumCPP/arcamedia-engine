@@ -16,7 +16,7 @@ pub struct TexturedRect<'a> {
 impl<'a> TexturedRect<'a> {
     pub async fn new(
         position: [f32; 2],
-        scale: [f32; 2],
+        size: [f32; 2],
         rotation: f32,
         color: [f32; 4],
         texture: &'a Texture,
@@ -26,7 +26,7 @@ impl<'a> TexturedRect<'a> {
             .await
             .clone();
 
-        let transform = Transform::new(position, scale, rotation);
+        let transform = Transform::new(position, size, rotation);
 
         #[rustfmt::skip]
         let mesh = DynamicMeshT::new(vec![

@@ -12,13 +12,13 @@ pub struct Rect {
 }
 
 impl Rect {
-    pub async fn new(position: [f32; 2], scale: [f32; 2], rotation: f32, color: [f32; 4]) -> Self {
+    pub async fn new(position: [f32; 2], size: [f32; 2], rotation: f32, color: [f32; 4]) -> Self {
         let shader = sm()
             .get_shader("colored_vert.glsl", "colored_frag.glsl")
             .await
             .clone();
 
-        let transform = Transform::new(position, scale, rotation);
+        let transform = Transform::new(position, size, rotation);
 
         let mesh = StaticMesh::new(vec![
             -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5,

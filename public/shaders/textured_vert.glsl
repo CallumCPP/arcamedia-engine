@@ -4,7 +4,7 @@ layout(location = 1) in vec2 aTexCoord;
 
 uniform struct Transform {
     vec2 position;
-    vec2 scale;
+    vec2 size;
     float rotation;
 } transform;
 
@@ -16,13 +16,19 @@ uniform struct Camera {
 out vec2 vTexCoord;
 
 void main() {
-    vec2 rotatedPosition = vec2(
-        aPosition[0] * cos(transform.rotation) - aPosition[1] * sin(transform.rotation),
-        aPosition[1] * cos(transform.rotation) + aPosition[0] * sin(transform.rotation)
+    vec2 finalPosition = aPosition;
+
+    vec2 normalizedSize = transform.size/1920.0;                                                // Size by pixel
+    finalPosition *= normalizedSize;                                                            // Apply Transform size
+
+    finalPosition = vec2(
+        finalPosition.x * cos(transform.rotation) - finalPosition.y * sin(transform.rotation),  // Rotation
+        finalPosition.y * cos(transform.rotation) + finalPosition.x * sin(transform.rotation)
     );
 
-    vec2 screenScaledPosition = vec2(rotatedPosition[0], rotatedPosition[1]*16.0/9.0);
-    vec2 finalPosition = (screenScaledPosition * transform.scale + transform.position) * camera.zoom - camera.position;
+    finalPosition = vec2(finalPosition.x, finalPosition.y*16.0/9.0);                            // Screen scaling
+
+    finalPosition = (finalPosition + transform.position - camera.position) * camera.zoom;
 
     vTexCoord = aTexCoord;
 

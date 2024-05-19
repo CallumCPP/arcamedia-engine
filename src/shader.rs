@@ -39,7 +39,7 @@ impl Shader {
 
     pub fn uniform_transform(&self, transform: &Transform) {
         self.uniform_coordinates_with_f32_array("transform.position", &transform.position);
-        self.uniform2fv_with_f32_array("transform.scale", &transform.scale);
+        self.uniform2fv_with_f32_array("transform.size", &transform.size);
         self.uniform1f("transform.rotation", transform.rotation);
     }
 

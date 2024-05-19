@@ -1,3 +1,5 @@
+// I do not know js, this is largely ai generated
+
 export async function fetchStringFromServer(url) {
     try {
         const response = await fetch(url);

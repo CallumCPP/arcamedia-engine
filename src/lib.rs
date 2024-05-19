@@ -38,44 +38,66 @@ async fn run() -> Result<(), JsValue> {
     TextureManager::init();
     Input::init();
 
-    sm().get_shader("colored_vert.glsl", "colored_frag.glsl").await;
-    sm().get_shader("textured_vert.glsl", "textured_frag.glsl").await;
+    sm().get_shader("colored_vert.glsl", "colored_frag.glsl")
+        .await;
+    sm().get_shader("textured_vert.glsl", "textured_frag.glsl")
+        .await;
 
     let mut objects: Vec<Box<dyn Object>> = Vec::new();
 
-    let rect1 = Rect::new([2000.0, -100.0], [1.0, 1.0], 2.0, [0.0, 1.0, 0.0, 1.0]).await;
-    objects.push(Box::new(rect1));
+    let rect = Rect::new([2000.0, -100.0], [1000.0, 500.0], 2.0, [0.0, 1.0, 0.0, 1.0]).await;
+    objects.push(Box::new(rect));
 
-    let rect2 = Rect::new([-2000.0, -100.0], [1.0, 1.0], 2.0, [0.0, 1.0, 0.0, 1.0]).await;
-    objects.push(Box::new(rect2));
+    let rect = Rect::new([-2000.0, -100.0], [1000.0, 250.0], -1.0, [0.0, 0.0, 1.0, 1.0]).await;
+    objects.push(Box::new(rect));
 
-    let rect3 = TexturedRect::new(
+    let rect = Rect::new([0.0, 0.0], [1.0, 1.0], 0.0, [1.0, 0.0, 1.0, 1.0]).await;
+    objects.push(Box::new(rect));
+
+    let rect = Rect::new([0.0, 0.0], [50.0, 50.0], 0.0, [1.0, 0.0, 1.0, 1.0]).await;
+    objects.push(Box::new(rect));
+
+    let rect = Rect::new([-100.0, 0.0], [1.0, 1.0], 0.0, [1.0, 0.0, 1.0, 1.0]).await;
+    objects.push(Box::new(rect));
+
+    let rect = Rect::new([-100.0, -100.0], [1.0, 1.0], 0.0, [1.0, 0.0, 1.0, 1.0]).await;
+    objects.push(Box::new(rect));
+
+    let rect = TexturedRect::new(
         [-1000.0, 500.0],
-        [0.5, 0.5],
+        [1000.0, 10000.0],
         1.0,
         [1.0, 1.0, 1.0, 1.0],
         tm().get_texture("no texture.png").await,
     )
-        .await;
-    objects.push(Box::new(rect3));
+    .await;
+    objects.push(Box::new(rect));
 
-    let rect4 = TexturedRect::new(
+    let rect = TexturedRect::new(
         [1000.0, 500.0],
-        [0.5, 0.5],
+        [1024.0, 5012.0],
         1.0,
         [1.0, 1.0, 1.0, 1.0],
         tm().get_texture("test.png").await,
     )
-        .await;
-    objects.push(Box::new(rect4));
+    .await;
+    objects.push(Box::new(rect));
 
-    let mut camera = Camera::new([1000.0, 100.0], 1.0);
+    let mut camera = Camera::new([0.0, 0.0], 1.0);
 
     let mut last_time = performance.now();
     loop {
         let delta_time = (performance.now() - last_time) / 1000.0;
         last_time = performance.now();
-        log!("FPS: {}", 1.0/delta_time);
+        // log!("FPS: {}", 1.0 / delta_time);
+
+        if input().key_was_pressed("KeyI") {
+            camera.zoom += 0.2;
+        }
+
+        if input().key_was_pressed("KeyO") {
+            camera.zoom -= 0.2;
+        }
 
         sm().update_camera(&camera);
 
@@ -105,7 +127,10 @@ fn init_webgl() -> WebGl2RenderingContext {
 
     gl.enable(WebGl2RenderingContext::BLEND);
 
-    gl.blend_func(WebGl2RenderingContext::SRC_ALPHA, WebGl2RenderingContext::ONE_MINUS_SRC_ALPHA);
+    gl.blend_func(
+        WebGl2RenderingContext::SRC_ALPHA,
+        WebGl2RenderingContext::ONE_MINUS_SRC_ALPHA,
+    );
 
     gl
 }
