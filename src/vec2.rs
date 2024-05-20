@@ -19,6 +19,10 @@ impl Vec2 {
     pub fn normalize(&self) -> Self {
         let len = self.len();
 
+        if len == 0.0 {
+            return Self { x: 0.0, y: 0.0 };
+        }
+
         Self {
             x: self.x / len,
             y: self.y / len,
@@ -73,6 +77,13 @@ impl ops::Add<&Vec2> for &Vec2 {
     }
 }
 
+impl ops::AddAssign<&Vec2> for Vec2 {
+    fn add_assign(&mut self, rhs: &Vec2) {
+        self.x += rhs.x;
+        self.y += rhs.y;
+    }
+}
+
 impl ops::Sub<&Vec2> for &Vec2 {
     type Output = Vec2;
 
@@ -81,6 +92,13 @@ impl ops::Sub<&Vec2> for &Vec2 {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
         }
+    }
+}
+
+impl ops::SubAssign<&Vec2> for Vec2 {
+    fn sub_assign(&mut self, rhs: &Vec2) {
+        self.x -= rhs.x;
+        self.y -= rhs.y;
     }
 }
 
@@ -95,6 +113,13 @@ impl ops::Mul<f64> for &Vec2 {
     }
 }
 
+impl ops::MulAssign<&Vec2> for Vec2 {
+    fn mul_assign(&mut self, rhs: &Vec2) {
+        self.x *= rhs.x;
+        self.y *= rhs.y;
+    }
+}
+
 impl ops::Div<f64> for &Vec2 {
     type Output = Vec2;
 
@@ -103,5 +128,12 @@ impl ops::Div<f64> for &Vec2 {
             x: self.x / rhs,
             y: self.y / rhs,
         }
+    }
+}
+
+impl ops::DivAssign<&Vec2> for Vec2 {
+    fn div_assign(&mut self, rhs: &Vec2) {
+        self.x /= rhs.x;
+        self.y /= rhs.y;
     }
 }

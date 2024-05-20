@@ -1,5 +1,5 @@
 use crate::vec2::Vec2;
-use js_sys::Math::{cos, sin, sqrt};
+use js_sys::Math::{cos, sin};
 
 pub struct Transform {
     pub position: Vec2,
@@ -89,6 +89,16 @@ impl Transform {
         }
 
         Vec2::new(min, max)
+    }
+}
+
+impl Clone for Transform {
+    fn clone(&self) -> Self {
+        Self {
+            position: self.position.clone(),
+            size: self.size.clone(),
+            rotation: self.rotation,
+        }
     }
 }
 

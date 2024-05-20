@@ -1,7 +1,5 @@
 use crate::shader::Shader;
 use crate::transform::Transform;
-use std::cell::RefCell;
-use std::rc::Rc;
 
 pub mod player;
 pub mod rect;

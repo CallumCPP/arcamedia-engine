@@ -1,14 +1,14 @@
 use crate::camera::Camera;
 use crate::object::Object;
+use crate::shader_manager::sm;
 use crate::transform::Transform;
 use std::cell::RefCell;
 use std::rc::Rc;
-use crate::shader_manager::sm;
 
 #[macro_export]
-macro_rules! obj {
+macro_rules! object {
     ($object: expr) => {
-        Rc::new(RefCell::new($object))
+        om().add_object(Rc::new(RefCell::new($object)))
     };
 }
 
@@ -48,28 +48,27 @@ impl ObjectManager {
         self.screen_transform.position = self.camera.position.clone();
 
         self.objects_on_screen.clear();
+        self.objects_on_screen.push(self.objects[0].clone());
+
         for object in &self.objects[1..] {
-            if object
-                .borrow_mut()
-                .transform()
-                .overlaps(&self.screen_transform)
-            {
+            if object.borrow().transform().overlaps(&self.screen_transform) {
                 object.borrow_mut().tick(delta_time);
                 self.objects_on_screen.push(object.clone());
             }
         }
 
         self.objects[0].borrow_mut().tick(delta_time);
-        self.objects[0].borrow().draw();
 
-        self.camera.tick(delta_time);
+        self.camera.tick();
         sm().update_camera(&self.camera);
     }
 
     pub fn draw(&self) {
-        for object in &self.objects_on_screen {
+        for object in &self.objects_on_screen[1..] {
             object.borrow().draw();
         }
+
+        self.objects[0].borrow().draw();
     }
 }
 

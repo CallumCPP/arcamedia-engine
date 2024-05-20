@@ -32,7 +32,7 @@ void main() {
 
     finalPosition = (finalPosition + transform.position - camera.position) * camera.zoom;
 
-    vTexCoord = aTexCoord;
+    vTexCoord = vec2(aTexCoord.x, 1.0 - aTexCoord.y);
 
     gl_Position = vec4(finalPosition, 0.0, 1.0);
 }

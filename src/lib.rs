@@ -1,10 +1,10 @@
 use crate::input::{input, Input};
+use crate::object::player::Player;
+use crate::object::rect::Rect;
 use crate::object::textured_rect::TexturedRect;
-use crate::object::Object;
 use crate::object_manager::{om, ObjectManager};
 use crate::shader_manager::{sm, ShaderManager};
 use crate::texture_manager::{tm, TextureManager};
-use crate::transform::Transform;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::time::Duration;
@@ -48,6 +48,52 @@ async fn run() -> Result<(), JsValue> {
     sm().get_shader("textured_vert.glsl", "textured_frag.glsl")
         .await;
 
+    let player = Player::new(
+        [-100.0, 500.0].into(),
+        [100.0, 200.0].into(),
+        0.0,
+        [1.0, 1.0, 1.0, 1.0],
+        tm().get_texture("player.png").await,
+    )
+    .await;
+    object!(player);
+
+    let rect = Rect::new(
+        [0.0, -2000.0].into(),
+        [4000.0, 10.0].into(),
+        0.0,
+        [1.0, 1.0, 1.0, 1.0],
+    )
+    .await;
+    object!(rect);
+
+    let rect = Rect::new(
+        [0.0, 2000.0].into(),
+        [4000.0, 10.0].into(),
+        0.0,
+        [1.0, 1.0, 1.0, 1.0],
+    )
+    .await;
+    object!(rect);
+
+    let rect = Rect::new(
+        [-2000.0, 0.0].into(),
+        [10.0, 4000.0].into(),
+        0.0,
+        [1.0, 1.0, 1.0, 1.0],
+    )
+    .await;
+    object!(rect);
+
+    let rect = Rect::new(
+        [2000.0, 0.0].into(),
+        [10.0, 4000.0].into(),
+        0.0,
+        [1.0, 1.0, 1.0, 1.0],
+    )
+    .await;
+    object!(rect);
+
     let rect = TexturedRect::new(
         [-1000.0, 500.0].into(),
         [500.0, 500.0].into(),
@@ -56,7 +102,7 @@ async fn run() -> Result<(), JsValue> {
         tm().get_texture("no texture.png").await,
     )
     .await;
-    om().add_object(obj!(rect));
+    object!(rect);
 
     let rect = TexturedRect::new(
         [1000.0, 500.0].into(),
@@ -66,13 +112,13 @@ async fn run() -> Result<(), JsValue> {
         tm().get_texture("test.png").await,
     )
     .await;
-    om().add_object(obj!(rect));
+    object!(rect);
 
     let mut last_time = performance.now();
     loop {
         let delta_time = (performance.now() - last_time) / 1000.0;
         last_time = performance.now();
-        log!("FPS: {}", 1.0 / delta_time);
+        // log!("FPS: {}", 1.0 / delta_time);
 
         gl().clear_color(0.0, 0.0, 0.0, 1.0);
         gl().clear(WebGl2RenderingContext::COLOR_BUFFER_BIT);
