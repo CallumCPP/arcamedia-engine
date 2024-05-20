@@ -38,29 +38,32 @@ impl Shader {
     }
 
     pub fn uniform_transform(&self, transform: &Transform) {
-        self.uniform_coordinates_with_f32_array("transform.position", &transform.position);
-        self.uniform2fv_with_f32_array("transform.size", &transform.size);
-        self.uniform1f("transform.rotation", transform.rotation);
+        self.uniform_coordinates_with_f64_array("transform.position", &transform.position.as_arr());
+        self.uniform2fv_with_f64_array("transform.size", &transform.size.as_arr());
+        self.uniform1f("transform.rotation", transform.rotation as f32);
     }
 
     pub fn uniform_camera(&self, camera: &Camera) {
-        self.uniform_coordinates_with_f32_array("camera.position", &camera.position);
-        self.uniform1f("camera.zoom", camera.zoom);
+        self.uniform_coordinates_with_f64_array("camera.position", &camera.position.as_arr());
+        self.uniform1f("camera.zoom", camera.zoom as f32);
     }
 
-    pub fn uniform4fv_with_f32_array(&self, name: &str, data: [f32; 4]) {
-        gl().uniform4fv_with_f32_array(Some(&self.get_uniform_location(name).unwrap()), &data);
+    pub fn uniform4fv_with_f32_array(&self, name: &str, data: &[f32; 4]) {
+        gl().uniform4fv_with_f32_array(Some(&self.get_uniform_location(name).unwrap()), data);
     }
 
-    pub fn uniform_coordinates_with_f32_array(&self, name: &str, data: &[f32; 2]) {
+    pub fn uniform_coordinates_with_f64_array(&self, name: &str, data: &[f64; 2]) {
         gl().uniform2fv_with_f32_array(
             Some(&self.get_uniform_location(name).unwrap()),
-            &[data[0] / 1920.0, data[1] / 1080.0],
+            &[data[0] as f32 / 960.0, data[1] as f32 / 540.0],
         );
     }
 
-    pub fn uniform2fv_with_f32_array(&self, name: &str, data: &[f32; 2]) {
-        gl().uniform2fv_with_f32_array(Some(&self.get_uniform_location(name).unwrap()), data);
+    pub fn uniform2fv_with_f64_array(&self, name: &str, data: &[f64; 2]) {
+        gl().uniform2fv_with_f32_array(
+            Some(&self.get_uniform_location(name).unwrap()),
+            &[data[0] as f32, data[1] as f32],
+        );
     }
 
     pub fn uniform1f(&self, name: &str, data: f32) {

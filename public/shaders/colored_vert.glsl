@@ -1,6 +1,8 @@
 #version 300 es
 layout(location = 0) in vec2 aPosition;
 
+#define HALF_SCREEN_WIDTH 960.0
+
 uniform struct Transform {
     vec2 position;
     vec2 size;
@@ -15,7 +17,7 @@ uniform struct Camera {
 void main() {
     vec2 finalPosition = aPosition;
 
-    vec2 normalizedSize = transform.size/1920.0;                                                // Size by pixel
+    vec2 normalizedSize = transform.size/HALF_SCREEN_WIDTH;                                                 // Size by pixel
     finalPosition *= normalizedSize;                                                            // Apply Transform size
 
     finalPosition = vec2(

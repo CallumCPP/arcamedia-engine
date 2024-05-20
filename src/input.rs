@@ -29,8 +29,18 @@ impl Input {
         let document = web_sys::window().unwrap().document().unwrap();
 
         let keydown_closure = Closure::new(Box::new(move |event: KeyboardEvent| {
+            match input().key_map.get(&event.code()) {
+                None => {
+                    input().key_pressed_map.insert(event.code(), true);
+                }
+                Some(down) => {
+                    if !down {
+                        input().key_pressed_map.insert(event.code(), true);
+                    }
+                }
+            }
+
             input().key_map.insert(event.code(), true);
-            input().key_pressed_map.insert(event.code(), true);
         }) as Box<dyn FnMut(_)>);
 
         document

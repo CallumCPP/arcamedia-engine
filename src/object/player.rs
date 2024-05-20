@@ -1,4 +1,4 @@
-use crate::mesh::static_mesh_t::StaticMeshT;
+use crate::mesh::dynamic_mesh_t::DynamicMeshT;
 use crate::mesh::Mesh;
 use crate::object::{Object, Transform};
 use crate::shader::Shader;
@@ -6,15 +6,15 @@ use crate::shader_manager::sm;
 use crate::texture::Texture;
 use crate::vec2::Vec2;
 
-pub struct TexturedRect<'a> {
+pub struct Player<'a> {
     transform: Transform,
-    mesh: StaticMeshT,
+    mesh: DynamicMeshT,
     shader: Shader,
     color: [f32; 4],
     texture: &'a Texture,
 }
 
-impl<'a> TexturedRect<'a> {
+impl<'a> Player<'a> {
     pub async fn new(
         position: Vec2,
         size: Vec2,
@@ -30,12 +30,12 @@ impl<'a> TexturedRect<'a> {
         let transform = Transform::new(position, size, rotation);
 
         #[rustfmt::skip]
-        let mesh = StaticMeshT::new(vec![
+        let mesh = DynamicMeshT::new(vec![
             -0.5, -0.5,  0.0, 0.0,
-             0.5, -0.5,  1.0, 0.0,
+            0.5, -0.5,  1.0, 0.0,
             -0.5,  0.5,  0.0, 1.0,
-             0.5, -0.5,  1.0, 0.0,
-             0.5,  0.5,  1.0, 1.0,
+            0.5, -0.5,  1.0, 0.0,
+            0.5,  0.5,  1.0, 1.0,
             -0.5,  0.5,  0.0, 1.0,
         ]);
 
@@ -49,7 +49,7 @@ impl<'a> TexturedRect<'a> {
     }
 }
 
-impl<'a> Object for TexturedRect<'a> {
+impl<'a> Object for Player<'a> {
     fn draw(&self) {
         self.shader.bind();
         self.texture.bind();
@@ -60,6 +60,8 @@ impl<'a> Object for TexturedRect<'a> {
 
         self.mesh.draw();
     }
+
+    fn tick(&mut self, delta_time: f64) {}
 
     fn transform(&self) -> &Transform {
         &self.transform
