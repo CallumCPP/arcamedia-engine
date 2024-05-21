@@ -6,10 +6,11 @@ use web_sys::{WebGl2RenderingContext, WebGlProgram, WebGlShader, WebGlUniformLoc
 #[derive(Clone)]
 pub struct Shader {
     program: WebGlProgram,
+    id: i32,
 }
 
 impl Shader {
-    pub async fn new(vert_path: &str, frag_path: &str) -> Result<Shader, String> {
+    pub async fn new(vert_path: &str, frag_path: &str, id: i32) -> Result<Shader, String> {
         let vert_src = crate::web::get_string(
             (String::from("/shaders/") + &*String::from(vert_path)).as_str(),
         )
@@ -26,11 +27,15 @@ impl Shader {
 
         let program = link_program(&vert_shader, &frag_shader)?;
 
-        Ok(Self { program })
+        Ok(Self { program, id })
     }
 
     pub fn bind(&self) {
         gl().use_program(Some(&self.program));
+    }
+
+    pub fn id(&self) -> i32 {
+        self.id
     }
 
     pub fn get_uniform_location(&self, name: &str) -> Option<WebGlUniformLocation> {

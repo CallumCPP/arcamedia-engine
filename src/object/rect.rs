@@ -9,11 +9,18 @@ pub struct Rect {
     transform: Transform,
     mesh: StaticMesh,
     shader: Shader,
-    color: [f32; 4],
+    pub color: [f32; 4],
+    pub collides: bool,
 }
 
 impl Rect {
-    pub async fn new(position: Vec2, size: Vec2, rotation: f64, color: [f32; 4]) -> Self {
+    pub async fn new(
+        position: Vec2,
+        size: Vec2,
+        rotation: f64,
+        color: [f32; 4],
+        collides: bool,
+    ) -> Self {
         let shader = sm()
             .get_shader("colored_vert.glsl", "colored_frag.glsl")
             .await
@@ -30,13 +37,13 @@ impl Rect {
             mesh,
             shader,
             color,
+            collides,
         }
     }
 }
 
 impl Object for Rect {
     fn draw(&self) {
-        self.shader.bind();
         self.shader
             .uniform4fv_with_f32_array("fragColor", &self.color);
         self.shader.uniform_transform(&self.transform);
@@ -54,5 +61,21 @@ impl Object for Rect {
 
     fn shader(&self) -> &Shader {
         &self.shader
+    }
+
+    fn collides(&self) -> bool {
+        self.collides
+    }
+}
+
+impl Clone for Rect {
+    fn clone(&self) -> Self {
+        Self {
+            shader: self.shader.clone(),
+            transform: self.transform().clone(),
+            mesh: self.mesh.clone(),
+            color: self.color.clone(),
+            collides: self.collides,
+        }
     }
 }

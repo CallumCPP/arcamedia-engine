@@ -1,4 +1,4 @@
-use js_sys::Math::sqrt;
+use js_sys::Math::{cos, sin, sqrt};
 use std::ops;
 
 #[derive(PartialEq, Debug)]
@@ -37,8 +37,11 @@ impl Vec2 {
         self.x * other.x + self.y * other.y
     }
 
-    pub fn dot_static(first: &Vec2, second: &Vec2) -> f64 {
-        first.x * second.x + first.y * second.y
+    pub fn rotated(&mut self, angle: f64) -> Self {
+        Self {
+            x: self.x * cos(angle) - self.y * sin(angle),
+            y: self.y * cos(angle) + self.x * sin(angle),
+        }
     }
 }
 

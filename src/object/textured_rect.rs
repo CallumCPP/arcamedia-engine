@@ -1,3 +1,4 @@
+use crate::input::input;
 use crate::mesh::static_mesh_t::StaticMeshT;
 use crate::mesh::Mesh;
 use crate::object::{Object, Transform};
@@ -10,8 +11,9 @@ pub struct TexturedRect<'a> {
     transform: Transform,
     mesh: StaticMeshT,
     shader: Shader,
-    color: [f32; 4],
+    pub color: [f32; 4],
     texture: &'a Texture,
+    collides: bool,
 }
 
 impl<'a> TexturedRect<'a> {
@@ -21,6 +23,7 @@ impl<'a> TexturedRect<'a> {
         rotation: f64,
         color: [f32; 4],
         texture: &'a Texture,
+        collides: bool,
     ) -> Self {
         let shader = sm()
             .get_shader("textured_vert.glsl", "textured_frag.glsl")
@@ -45,13 +48,13 @@ impl<'a> TexturedRect<'a> {
             shader,
             color,
             texture,
+            collides,
         }
     }
 }
 
 impl<'a> Object for TexturedRect<'a> {
     fn draw(&self) {
-        self.shader.bind();
         self.texture.bind();
         self.shader
             .uniform4fv_with_f32_array("fragColor", &self.color);
@@ -59,6 +62,16 @@ impl<'a> Object for TexturedRect<'a> {
         self.shader.uniform_transform(&self.transform);
 
         self.mesh.draw();
+    }
+
+    fn tick(&mut self, _delta_time: f64) {
+        if input().key_was_pressed("KeyT") {
+            self.transform.rotation += 0.2;
+        }
+
+        if input().key_was_pressed("KeyY") {
+            self.transform.rotation -= 0.2;
+        }
     }
 
     fn transform(&self) -> &Transform {
@@ -71,5 +84,9 @@ impl<'a> Object for TexturedRect<'a> {
 
     fn shader(&self) -> &Shader {
         &self.shader
+    }
+
+    fn collides(&self) -> bool {
+        self.collides
     }
 }

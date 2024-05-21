@@ -40,3 +40,11 @@ impl VertexArray {
         gl().enable_vertex_attrib_array(location as u32);
     }
 }
+
+impl Clone for VertexArray {
+    fn clone(&self) -> Self {
+        Self {
+            gl_vao: self.gl_vao.clone(),
+        }
+    }
+}

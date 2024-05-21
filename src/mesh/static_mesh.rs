@@ -26,3 +26,12 @@ impl Mesh for StaticMesh {
         gl().draw_arrays(WebGl2RenderingContext::TRIANGLES, 0, self.vert_count);
     }
 }
+
+impl Clone for StaticMesh {
+    fn clone(&self) -> Self {
+        Self {
+            vert_count: self.vert_count,
+            va: self.va.clone(),
+        }
+    }
+}

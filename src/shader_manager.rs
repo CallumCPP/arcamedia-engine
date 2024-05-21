@@ -7,13 +7,19 @@ static mut SM: Option<Box<ShaderManager>> = None;
 
 pub struct ShaderManager {
     shaders: HashMap<String, Shader>,
+    curr_id: i32,
 }
 
 impl ShaderManager {
     pub fn init() {
         let shaders: HashMap<String, Shader> = HashMap::new();
 
-        unsafe { SM = Some(Box::new(Self { shaders })) }
+        unsafe {
+            SM = Some(Box::new(Self {
+                shaders,
+                curr_id: 0,
+            }))
+        }
     }
 
     pub async fn get_shader(&mut self, vert_path: &str, frag_path: &str) -> &Shader {
@@ -22,9 +28,10 @@ impl ShaderManager {
         match self.shaders.entry(path_amalgam) {
             Entry::Occupied(entry) => entry.into_mut(),
             Entry::Vacant(entry) => {
-                let shader = Shader::new(vert_path, frag_path)
+                let shader = Shader::new(vert_path, frag_path, self.curr_id)
                     .await
                     .expect("Should be able to create shader");
+                self.curr_id += 1;
                 entry.insert(shader)
             }
         }

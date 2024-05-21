@@ -52,7 +52,7 @@ async fn run() -> Result<(), JsValue> {
         [-100.0, 500.0].into(),
         [100.0, 200.0].into(),
         0.0,
-        [1.0, 1.0, 1.0, 1.0],
+        [0.0, 1.0, 0.0, 1.0],
         tm().get_texture("player.png").await,
     )
     .await;
@@ -63,15 +63,17 @@ async fn run() -> Result<(), JsValue> {
         [4000.0, 10.0].into(),
         0.0,
         [1.0, 1.0, 1.0, 1.0],
+        true,
     )
     .await;
     object!(rect);
 
     let rect = Rect::new(
-        [0.0, 2000.0].into(),
+        [0.0, 2300.0].into(),
         [4000.0, 10.0].into(),
         0.0,
         [1.0, 1.0, 1.0, 1.0],
+        true,
     )
     .await;
     object!(rect);
@@ -81,6 +83,7 @@ async fn run() -> Result<(), JsValue> {
         [10.0, 4000.0].into(),
         0.0,
         [1.0, 1.0, 1.0, 1.0],
+        true,
     )
     .await;
     object!(rect);
@@ -90,6 +93,7 @@ async fn run() -> Result<(), JsValue> {
         [10.0, 4000.0].into(),
         0.0,
         [1.0, 1.0, 1.0, 1.0],
+        true,
     )
     .await;
     object!(rect);
@@ -100,6 +104,7 @@ async fn run() -> Result<(), JsValue> {
         1.0,
         [1.0, 1.0, 1.0, 1.0],
         tm().get_texture("no texture.png").await,
+        true,
     )
     .await;
     object!(rect);
@@ -110,21 +115,28 @@ async fn run() -> Result<(), JsValue> {
         1.0,
         [1.0, 1.0, 1.0, 1.0],
         tm().get_texture("test.png").await,
+        true,
     )
     .await;
     object!(rect);
 
     let mut last_time = performance.now();
     loop {
+        // log!("-----------");
         let delta_time = (performance.now() - last_time) / 1000.0;
         last_time = performance.now();
-        // log!("FPS: {}", 1.0 / delta_time);
+        log!("FPS: {}", 1.0 / delta_time);
 
-        gl().clear_color(0.0, 0.0, 0.0, 1.0);
+        // gl().clear_color(random() as f32, random() as f32, random() as f32, 1.0);
+        gl().clear_color(0.1, 0.1, 0.1, 1.0);
         gl().clear(WebGl2RenderingContext::COLOR_BUFFER_BIT);
 
+        // let mut timer = performance.now();
         om().tick(delta_time);
+        // log!("Tick took {} milliseconds", performance.now() - timer);
+        // timer = performance.now();
         om().draw();
+        // log!("Draw took {} milliseconds", performance.now() - timer);
 
         input().flush_pressed_map();
 

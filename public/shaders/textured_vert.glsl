@@ -20,7 +20,7 @@ out vec2 vTexCoord;
 void main() {
     vec2 finalPosition = aPosition;
 
-    vec2 normalizedSize = transform.size/HALF_SCREEN_WIDTH;                                                 // Size by pixel
+    vec2 normalizedSize = transform.size/HALF_SCREEN_WIDTH;                                     // Size by pixel
     finalPosition *= normalizedSize;                                                            // Apply Transform size
 
     finalPosition = vec2(

@@ -1,5 +1,5 @@
 use crate::vec2::Vec2;
-use js_sys::Math::{cos, sin};
+use js_sys::Math::{max, min};
 
 pub struct Transform {
     pub position: Vec2,
@@ -24,8 +24,8 @@ impl Transform {
         normals.extend(other.normals(&vertices2));
 
         for normal in normals {
-            let min_max1 = Self::get_min_max(&vertices1, &normal);
-            let min_max2 = Self::get_min_max(&vertices2, &normal);
+            let min_max1 = Self::get_min_max_projection(&vertices1, &normal);
+            let min_max2 = Self::get_min_max_projection(&vertices2, &normal);
 
             if min_max1.y < min_max2.x || min_max2.y < min_max1.x {
                 return false;
@@ -35,24 +35,34 @@ impl Transform {
         true
     }
 
+    pub fn overlaps_lazy(&self, other: &Transform) -> bool {
+        let half_size = &self.size / 2.0;
+        let other_half_size = &other.size / 2.0;
+
+        let corner = &Vec2::new(half_size.x, half_size.y).rotated(self.rotation);
+
+        let half_size = corner.len();
+
+        self.position.x - half_size < other.position.x + other_half_size.x
+            && self.position.y - half_size < other.position.y + other_half_size.y
+            && self.position.x + half_size > other.position.x - other_half_size.x
+            && self.position.y + half_size > other.position.y - other_half_size.y
+    }
+
     pub fn vertices(&self) -> Vec<Vec2> {
         let mut vertices: Vec<Vec2> = Vec::new();
         let half_size = &self.size / 2.0;
 
-        let point =
-            &rotate_point(&Vec2::new(half_size.x, half_size.y), self.rotation) + &self.position; // Top right
+        let point = &Vec2::new(half_size.x, half_size.y).rotated(self.rotation) + &self.position; // Top right
         vertices.push(point);
 
-        let point =
-            &rotate_point(&Vec2::new(half_size.x, -half_size.y), self.rotation) + &self.position; // Bottom right
+        let point = &Vec2::new(half_size.x, -half_size.y).rotated(self.rotation) + &self.position; // Bottom right
         vertices.push(point);
 
-        let point =
-            &rotate_point(&Vec2::new(-half_size.x, -half_size.y), self.rotation) + &self.position; // Bottom left
+        let point = &Vec2::new(-half_size.x, -half_size.y).rotated(self.rotation) + &self.position; // Bottom left
         vertices.push(point);
 
-        let point =
-            &rotate_point(&Vec2::new(-half_size.x, half_size.y), self.rotation) + &self.position; // Top left
+        let point = &Vec2::new(-half_size.x, half_size.y).rotated(self.rotation) + &self.position; // Top left
         vertices.push(point);
 
         vertices
@@ -73,7 +83,41 @@ impl Transform {
         normals
     }
 
-    fn get_min_max(vertices: &Vec<Vec2>, normal: &Vec2) -> Vec2 {
+    pub fn nearest_edge_to(&self, point: &Vec2) -> (Vec2, Vec2) {
+        let mut nearest_edge: (Vec2, Vec2) = ([0.0, 0.0].into(), [0.0, 0.0].into());
+        let mut nearest_distance = f64::MAX;
+
+        for i in 0..self.vertices().len() {
+            let vertex1 = &self.vertices()[i];
+            let vertex2 = &self.vertices()[(i + 1) % self.vertices().len()];
+            let distance = Self::point_segment_distance(point, vertex1, vertex2);
+
+            if distance < nearest_distance {
+                nearest_edge = (vertex1.clone(), vertex2.clone());
+                nearest_distance = distance;
+            }
+        }
+
+        nearest_edge
+    }
+
+    fn point_segment_distance(point: &Vec2, seg_point1: &Vec2, seg_point2: &Vec2) -> f64 {
+        let a = seg_point1;
+        let b = seg_point2;
+        let p = point;
+
+        let ab = b - a;
+        let ap = p - a;
+
+        let t = Vec2::dot(&ap, &ab) / Vec2::dot(&ab, &ab);
+        let t = max(0.0, min(1.0, t));
+
+        let c = a + &(&ab * t);
+
+        (p - &c).len()
+    }
+
+    fn get_min_max_projection(vertices: &Vec<Vec2>, normal: &Vec2) -> Vec2 {
         let mut min = f64::MAX;
         let mut max = f64::MIN;
 
@@ -100,11 +144,4 @@ impl Clone for Transform {
             rotation: self.rotation,
         }
     }
-}
-
-fn rotate_point(point: &Vec2, rotation: f64) -> Vec2 {
-    Vec2::new(
-        point.x * cos(rotation) - point.y * sin(rotation),
-        point.y * cos(rotation) + point.x * sin(rotation),
-    )
 }

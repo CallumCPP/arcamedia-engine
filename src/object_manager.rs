@@ -51,7 +51,11 @@ impl ObjectManager {
         self.objects_on_screen.push(self.objects[0].clone());
 
         for object in &self.objects[1..] {
-            if object.borrow().transform().overlaps(&self.screen_transform) {
+            if object
+                .borrow()
+                .transform()
+                .overlaps_lazy(&self.screen_transform)
+            {
                 object.borrow_mut().tick(delta_time);
                 self.objects_on_screen.push(object.clone());
             }
@@ -64,10 +68,20 @@ impl ObjectManager {
     }
 
     pub fn draw(&self) {
+        let mut curr_shader_id = -1;
         for object in &self.objects_on_screen[1..] {
-            object.borrow().draw();
+            let object = object.borrow();
+            let shader = object.shader();
+
+            if shader.id() != curr_shader_id {
+                curr_shader_id = shader.id();
+                shader.bind();
+            }
+
+            object.draw();
         }
 
+        self.objects[0].borrow().shader().bind();
         self.objects[0].borrow().draw();
     }
 }
