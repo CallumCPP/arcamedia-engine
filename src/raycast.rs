@@ -15,7 +15,7 @@ pub enum FilterType {
 pub struct Raycast {
     pub ray: LineSeg,
     pub hit: Option<RaycastHit>,
-    filter: Vec<String>,
+    pub filter: Vec<String>,
 }
 
 pub struct RaycastHit {
@@ -47,7 +47,7 @@ impl Raycast {
                 self.ray.p1.x + self.ray.x_diff() / 2.0,
                 self.ray.p1.y + self.ray.y_diff() / 2.0,
             ]
-                .into(),
+            .into(),
             [self.ray.x_diff(), self.ray.y_diff()].into(),
             0.0,
         );
@@ -70,13 +70,13 @@ impl Raycast {
             FilterType::Blacklist => {
                 for object in objects_in_bounds {
                     let mut tag_found = false;
-                    for tag in &object.borrow().tags() {
+                    for tag in object.borrow().tags() {
                         if self.filter.contains(tag) {
                             tag_found = true;
                             break;
                         }
                     }
-                    
+
                     if tag_found {
                         continue;
                     }

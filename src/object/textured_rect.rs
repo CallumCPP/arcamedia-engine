@@ -14,6 +14,7 @@ pub struct TexturedRect<'a> {
     pub color: [f32; 4],
     texture: &'a Texture,
     collides: bool,
+    pub tags: Vec<String>,
 }
 
 impl<'a> TexturedRect<'a> {
@@ -49,6 +50,7 @@ impl<'a> TexturedRect<'a> {
             color,
             texture,
             collides,
+            tags: Vec::new(),
         }
     }
 }
@@ -96,5 +98,13 @@ impl<'a> Object for TexturedRect<'a> {
 
     fn color_mut(&mut self) -> Option<&mut [f32; 4]> {
         Some(&mut self.color)
+    }
+
+    fn tags(&self) -> &Vec<String> {
+        &self.tags
+    }
+
+    fn tags_mut(&mut self) -> &mut Vec<String> {
+        &mut self.tags
     }
 }

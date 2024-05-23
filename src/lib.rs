@@ -46,11 +46,6 @@ async fn run() -> Result<(), JsValue> {
     ObjectManager::init();
     Input::init();
 
-    sm().get_shader("colored_vert.glsl", "colored_frag.glsl")
-        .await;
-    sm().get_shader("textured_vert.glsl", "textured_frag.glsl")
-        .await;
-
     let player = Player::new(
         [-100.0, 500.0].into(),
         [100.0, 200.0].into(),

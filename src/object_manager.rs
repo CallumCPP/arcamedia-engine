@@ -4,6 +4,7 @@ use crate::shader_manager::sm;
 use crate::transform::Transform;
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::ptr;
 
 #[macro_export]
 macro_rules! object {
@@ -43,6 +44,15 @@ impl ObjectManager {
     pub fn add_object(&mut self, object: Rc<RefCell<dyn Object>>) -> Rc<RefCell<dyn Object>> {
         self.objects.push(object);
         self.objects.last().expect("Will be an object.").clone()
+    }
+
+    pub fn remove_object(&mut self, object: Rc<RefCell<dyn Object>>) {
+        for i in 1..self.objects.len() {
+            if Rc::ptr_eq(&self.objects[i], &object) {
+                self.objects.remove(i);
+                return;
+            }
+        }
     }
 
     pub fn tick(&mut self, delta_time: f64) {

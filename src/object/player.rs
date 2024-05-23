@@ -20,6 +20,7 @@ pub struct Player<'a> {
     raycast_rect: Rect,
     raycast_angle: f64,
     dummy_rect: Rect,
+    pub tags: Vec<String>,
 }
 
 impl<'a> Player<'a> {
@@ -33,7 +34,7 @@ impl<'a> Player<'a> {
         let textured_rect =
             TexturedRect::new(position.clone(), size, rotation, color, texture, false).await;
 
-        let raycast_rect = Rect::new(
+        let mut raycast_rect = Rect::new(
             position.clone(),
             [5.0, 5.0].into(),
             PI / 4.0,
@@ -57,6 +58,7 @@ impl<'a> Player<'a> {
             raycast_rect,
             raycast_angle: 0.0,
             dummy_rect,
+            tags: ["player".into()].into(),
         }
     }
 }
@@ -86,48 +88,6 @@ impl<'a> Object for Player<'a> {
             key_dir.x += 1.0;
         }
 
-        if input().get_key_down("KeyF") {
-            let mut rect = self.dummy_rect.clone();
-            rect.transform_mut().position = self.transform().position.clone();
-            rect.color[0] = random() as f32;
-            rect.color[1] = random() as f32;
-            rect.color[2] = random() as f32;
-
-            object!(rect);
-        }
-
-        if input().get_key_down("KeyM") {
-            self.raycast_angle -= 1.0 * delta_time;
-        }
-
-        if input().get_key_down("KeyN") {
-            self.raycast_angle += 1.0 * delta_time;
-        }
-
-        let raycast_length = 500.0;
-        self.raycast_rect.transform_mut().position = &self.transform().position
-            + &Vec2::new(
-                raycast_length * cos(self.raycast_angle),
-                raycast_length * sin(self.raycast_angle),
-            );
-
-        if input().get_key_down("KeyR") {
-            let ray = LineSeg::new(
-                self.transform().position.clone(),
-                self.raycast_rect.transform().position.clone(),
-            );
-
-            let mut raycast = Raycast::new(ray, ["player".into()].into());
-            raycast.fire(FilterType::Blacklist);
-
-            match raycast.hit {
-                None => {}
-                Some(hit) => {
-                    hit.object.borrow_mut().transform_mut().rotation += 8.0 * delta_time;
-                }
-            }
-        }
-
         let speed = self.speed * delta_time;
 
         let delta_position = &key_dir.normalize() * speed;
@@ -141,7 +101,72 @@ impl<'a> Object for Player<'a> {
 
             if object.collides() && transform.overlaps(self.transform()) {
                 self.transform_mut().position = old_position;
-                return;
+                break;
+            }
+        }
+
+        if input().get_key_down("KeyM") {
+            self.raycast_angle -= 2.0 * delta_time;
+        }
+
+        if input().get_key_down("KeyN") {
+            self.raycast_angle += 2.0 * delta_time;
+        }
+
+        let raycast_length = 500.0;
+        let mut raycast_p2 = Vec2::new(
+            raycast_length * cos(self.raycast_angle),
+            raycast_length * sin(self.raycast_angle),
+        );
+
+        self.raycast_rect.transform_mut().position =
+            &self.transform().position + &(&raycast_p2 / 2.0);
+        self.raycast_rect.transform_mut().rotation = self.raycast_angle;
+        self.raycast_rect.transform_mut().size.x = raycast_length;
+
+        raycast_p2 += &self.transform().position.clone();
+
+        if input().get_key_down("KeyF") {
+            let mut rect = self.dummy_rect.clone();
+            rect.transform_mut().position = raycast_p2.clone();
+            rect.color[0] = random() as f32;
+            rect.color[1] = random() as f32;
+            rect.color[2] = random() as f32;
+
+            object!(rect);
+        }
+
+        if input().get_key_down("KeyR") {
+            let ray = LineSeg::new(
+                self.transform().position.clone(),
+                raycast_p2.clone(),
+            );
+
+            let mut raycast = Raycast::new(ray, ["player".into()].into());
+            raycast.fire(FilterType::Blacklist);
+
+            match raycast.hit {
+                None => {}
+                Some(hit) => {
+                    hit.object.borrow_mut().transform_mut().rotation += 8.0 * delta_time;
+                }
+            }
+        }
+
+        if input().get_key_down("KeyG") {
+            let ray = LineSeg::new(
+                self.transform().position.clone(),
+                raycast_p2.clone(),
+            );
+
+            let mut raycast = Raycast::new(ray, ["player".into()].into());
+            raycast.fire(FilterType::Blacklist);
+
+            match raycast.hit {
+                None => {}
+                Some(hit) => {
+                    om().remove_object(hit.object.clone());
+                }
             }
         }
     }
@@ -166,7 +191,11 @@ impl<'a> Object for Player<'a> {
         self.textured_rect.color_mut()
     }
 
-    fn tags(&self) -> Vec<String> {
-        ["player".into()].into()
+    fn tags(&self) -> &Vec<String> {
+        &self.tags
+    }
+
+    fn tags_mut(&mut self) -> &mut Vec<String> {
+        &mut self.tags
     }
 }

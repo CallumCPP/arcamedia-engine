@@ -11,6 +11,7 @@ pub struct Rect {
     shader: Shader,
     pub color: [f32; 4],
     pub collides: bool,
+    pub tags: Vec<String>,
 }
 
 impl Rect {
@@ -38,6 +39,7 @@ impl Rect {
             shader,
             color,
             collides,
+            tags: Vec::new(),
         }
     }
 }
@@ -74,6 +76,14 @@ impl Object for Rect {
     fn color_mut(&mut self) -> Option<&mut [f32; 4]> {
         Some(&mut self.color)
     }
+
+    fn tags(&self) -> &Vec<String> {
+        &self.tags
+    }
+
+    fn tags_mut(&mut self) -> &mut Vec<String> {
+        &mut self.tags
+    }
 }
 
 impl Clone for Rect {
@@ -84,6 +94,7 @@ impl Clone for Rect {
             mesh: self.mesh.clone(),
             color: self.color.clone(),
             collides: self.collides,
+            tags: self.tags.clone(),
         }
     }
 }

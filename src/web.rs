@@ -31,20 +31,12 @@ pub async fn get_bytes(url: &str) -> Result<Vec<u8>, JsValue> {
     }
 }
 
-// pub fn get_string(url: &str) -> String {
-//     let future = _get_string(url);
-//     let result = async_std::task::block_on(future);
-//     match result {
-//         Ok(s) => s,
-//         Err(e) => panic!("Failed to fetch string from server: {:?}", e),
-//     }
-// }
-//
-// pub fn get_bytes(url: &str) -> Vec<u8> {
-//     let future = _get_bytes(url);
-//     let result = async_std::task::block_on(future);
-//     match result {
-//         Ok(bytes) => bytes,
-//         Err(e) => panic!("Failed to fetch bytes from server: {:?}", e),
-//     }
-// }
+pub fn add_text_field(title: &str, id: &str) {
+    let overlay = web_sys::window().unwrap().document().unwrap().get_element_by_id("overlay").unwrap();
+
+    let mut new_html = overlay.inner_html();
+    new_html += "\n";
+    new_html += format!("<div>{title}: <span id=\"{id}\"></span></div>").as_str();
+
+    overlay.set_inner_html(new_html.as_str());
+}

@@ -1,0 +1,13 @@
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.container {
+    position: relative;
+}
+#overlay {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+}
