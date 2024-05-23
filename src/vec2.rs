@@ -43,6 +43,13 @@ impl Vec2 {
             y: self.y * cos(angle) + self.x * sin(angle),
         }
     }
+
+    pub fn abs(&self) -> Self {
+        Self {
+            x: self.x.abs(),
+            y: self.y.abs(),
+        }
+    }
 }
 
 impl Clone for Vec2 {

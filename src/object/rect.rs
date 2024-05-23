@@ -59,12 +59,20 @@ impl Object for Rect {
         &mut self.transform
     }
 
+    fn set_transform(&mut self, transform: Transform) {
+        self.transform = transform;
+    }
+
     fn shader(&self) -> &Shader {
         &self.shader
     }
 
     fn collides(&self) -> bool {
         self.collides
+    }
+
+    fn color_mut(&mut self) -> Option<&mut [f32; 4]> {
+        Some(&mut self.color)
     }
 }
 

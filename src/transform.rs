@@ -1,3 +1,4 @@
+use crate::line_seg::LineSeg;
 use crate::vec2::Vec2;
 use js_sys::Math::{max, min};
 
@@ -36,17 +37,41 @@ impl Transform {
     }
 
     pub fn overlaps_lazy(&self, other: &Transform) -> bool {
-        let half_size = &self.size / 2.0;
-        let other_half_size = &other.size / 2.0;
+        let self_half_size = &self.size.abs() / 2.0;
+        let other_half_size = &other.size.abs() / 2.0;
 
-        let corner = &Vec2::new(half_size.x, half_size.y).rotated(self.rotation);
+        let rotated_corners = [
+            Vec2::new(self_half_size.x, self_half_size.y).rotated(self.rotation),
+            Vec2::new(self_half_size.x, -self_half_size.y).rotated(self.rotation),
+            Vec2::new(-self_half_size.x, self_half_size.y).rotated(self.rotation),
+            Vec2::new(-self_half_size.x, -self_half_size.y).rotated(self.rotation),
+        ];
 
-        let half_size = corner.len();
+        let mut min_x = f64::INFINITY;
+        let mut max_x = f64::NEG_INFINITY;
+        let mut min_y = f64::INFINITY;
+        let mut max_y = f64::NEG_INFINITY;
 
-        self.position.x - half_size < other.position.x + other_half_size.x
-            && self.position.y - half_size < other.position.y + other_half_size.y
-            && self.position.x + half_size > other.position.x - other_half_size.x
-            && self.position.y + half_size > other.position.y - other_half_size.y
+        for corner in &rotated_corners {
+            let corner_world = &self.position + corner;
+            if corner_world.x < min_x {
+                min_x = corner_world.x;
+            }
+            if corner_world.x > max_x {
+                max_x = corner_world.x;
+            }
+            if corner_world.y < min_y {
+                min_y = corner_world.y;
+            }
+            if corner_world.y > max_y {
+                max_y = corner_world.y;
+            }
+        }
+
+        min_x < other.position.x + other_half_size.x
+            && max_x > other.position.x - other_half_size.x
+            && min_y < other.position.y + other_half_size.y
+            && max_y > other.position.y - other_half_size.y
     }
 
     pub fn vertices(&self) -> Vec<Vec2> {
@@ -66,6 +91,20 @@ impl Transform {
         vertices.push(point);
 
         vertices
+    }
+
+    pub fn lines(&self) -> Vec<LineSeg> {
+        let mut lines: Vec<LineSeg> = Vec::new();
+
+        let vertices = self.vertices();
+        for i in 0..vertices.len() {
+            lines.push(LineSeg::new(
+                vertices[i].clone(),
+                vertices[(i + 1) % vertices.len()].clone(),
+            ));
+        }
+
+        lines
     }
 
     pub fn normals(&self, vertices: &[Vec2]) -> Vec<Vec2> {

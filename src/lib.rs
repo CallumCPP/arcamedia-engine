@@ -16,9 +16,12 @@ mod web;
 mod camera;
 mod gl_objects;
 mod input;
+mod line_seg;
+mod matrix;
 mod mesh;
 mod object;
 mod object_manager;
+mod raycast;
 mod shader;
 mod shader_manager;
 mod texture;
@@ -125,7 +128,7 @@ async fn run() -> Result<(), JsValue> {
         // log!("-----------");
         let delta_time = (performance.now() - last_time) / 1000.0;
         last_time = performance.now();
-        log!("FPS: {}", 1.0 / delta_time);
+        // log!("FPS: {}", 1.0 / delta_time);
 
         // gl().clear_color(random() as f32, random() as f32, random() as f32, 1.0);
         gl().clear_color(0.1, 0.1, 0.1, 1.0);

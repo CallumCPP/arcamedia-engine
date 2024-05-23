@@ -40,26 +40,15 @@ impl ObjectManager {
         }
     }
 
-    pub fn add_object(&mut self, object: Rc<RefCell<dyn Object>>) {
+    pub fn add_object(&mut self, object: Rc<RefCell<dyn Object>>) -> Rc<RefCell<dyn Object>> {
         self.objects.push(object);
+        self.objects.last().expect("Will be an object.").clone()
     }
 
     pub fn tick(&mut self, delta_time: f64) {
         self.screen_transform.position = self.camera.position.clone();
 
-        self.objects_on_screen.clear();
-        self.objects_on_screen.push(self.objects[0].clone());
-
-        for object in &self.objects[1..] {
-            if object
-                .borrow()
-                .transform()
-                .overlaps_lazy(&self.screen_transform)
-            {
-                object.borrow_mut().tick(delta_time);
-                self.objects_on_screen.push(object.clone());
-            }
-        }
+        self.objects_on_screen = self.objects_in_bounds(&self.screen_transform);
 
         self.objects[0].borrow_mut().tick(delta_time);
 
@@ -83,6 +72,25 @@ impl ObjectManager {
 
         self.objects[0].borrow().shader().bind();
         self.objects[0].borrow().draw();
+    }
+
+    pub fn objects_in_bounds(&self, transform: &Transform) -> Vec<Rc<RefCell<dyn Object>>> {
+        let mut objects_in_bounds: Vec<Rc<RefCell<dyn Object>>> = Vec::new();
+
+        for object in &self.objects {
+            let object_ref = match object.try_borrow() {
+                Ok(r) => r,
+                Err(_) => {
+                    continue;
+                }
+            };
+
+            if object_ref.transform().overlaps_lazy(transform) {
+                objects_in_bounds.push(object.clone());
+            }
+        }
+
+        objects_in_bounds
     }
 }
 
