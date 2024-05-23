@@ -18,4 +18,7 @@ pub trait Object {
     fn color_mut(&mut self) -> Option<&mut [f32; 4]> {
         None
     }
+    fn tags(&self) -> Vec<String> {
+        [].into()
+    }
 }

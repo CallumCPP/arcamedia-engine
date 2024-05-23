@@ -6,9 +6,16 @@ use crate::vec2::Vec2;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+pub enum FilterType {
+    None,
+    Whitelist,
+    Blacklist,
+}
+
 pub struct Raycast {
     pub ray: LineSeg,
     pub hit: Option<RaycastHit>,
+    filter: Vec<String>,
 }
 
 pub struct RaycastHit {
@@ -18,15 +25,15 @@ pub struct RaycastHit {
 }
 
 impl Raycast {
-    pub fn new(ray: LineSeg) -> Self {
-        let mut raycast = Self { ray, hit: None };
-
-        raycast.fire();
-
-        raycast
+    pub fn new(ray: LineSeg, filter: Vec<String>) -> Self {
+        Self {
+            ray,
+            hit: None,
+            filter,
+        }
     }
 
-    pub fn fire(&mut self) {
+    pub fn fire(&mut self, filter_type: FilterType) {
         let mut has_hit = false;
         let mut hit_distance: f64 = 0.0;
         let mut hit = RaycastHit {
@@ -40,12 +47,44 @@ impl Raycast {
                 self.ray.p1.x + self.ray.x_diff() / 2.0,
                 self.ray.p1.y + self.ray.y_diff() / 2.0,
             ]
-            .into(),
+                .into(),
             [self.ray.x_diff(), self.ray.y_diff()].into(),
             0.0,
         );
 
-        let objects_to_check = om().objects_in_bounds(&bounds_to_check);
+        let objects_in_bounds = om().objects_in_bounds(&bounds_to_check);
+        let mut objects_to_check: Vec<Rc<RefCell<dyn Object>>> = Vec::new();
+
+        match filter_type {
+            FilterType::None => {}
+            FilterType::Whitelist => {
+                for object in objects_in_bounds {
+                    for tag in &self.filter {
+                        if object.borrow().tags().contains(tag) {
+                            objects_to_check.push(object.clone());
+                            break;
+                        }
+                    }
+                }
+            }
+            FilterType::Blacklist => {
+                for object in objects_in_bounds {
+                    let mut tag_found = false;
+                    for tag in &object.borrow().tags() {
+                        if self.filter.contains(tag) {
+                            tag_found = true;
+                            break;
+                        }
+                    }
+                    
+                    if tag_found {
+                        continue;
+                    }
+
+                    objects_to_check.push(object.clone());
+                }
+            }
+        }
 
         for object in objects_to_check {
             for line in object.borrow().transform().lines() {
@@ -80,9 +119,7 @@ impl Raycast {
         }
     }
 
-    pub fn fire_new(&mut self, ray: LineSeg) {
-        self.ray = ray;
-
-        self.fire();
+    pub fn set_filter(&mut self, filter: Vec<String>) {
+        self.filter = filter;
     }
 }

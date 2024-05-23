@@ -5,7 +5,7 @@ use crate::object::rect::Rect;
 use crate::object::textured_rect::TexturedRect;
 use crate::object::{Object, Transform};
 use crate::object_manager::om;
-use crate::raycast::Raycast;
+use crate::raycast::{FilterType, Raycast};
 use crate::shader::Shader;
 use crate::texture::Texture;
 use crate::vec2::Vec2;
@@ -117,7 +117,8 @@ impl<'a> Object for Player<'a> {
                 self.raycast_rect.transform().position.clone(),
             );
 
-            let raycast = Raycast::new(ray);
+            let mut raycast = Raycast::new(ray, ["player".into()].into());
+            raycast.fire(FilterType::Blacklist);
 
             match raycast.hit {
                 None => {}
@@ -163,5 +164,9 @@ impl<'a> Object for Player<'a> {
 
     fn color_mut(&mut self) -> Option<&mut [f32; 4]> {
         self.textured_rect.color_mut()
+    }
+
+    fn tags(&self) -> Vec<String> {
+        ["player".into()].into()
     }
 }
