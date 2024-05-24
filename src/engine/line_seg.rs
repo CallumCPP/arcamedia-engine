@@ -1,5 +1,5 @@
-use crate::matrix::{Matrix21, Matrix22};
-use crate::vec2::Vec2;
+use crate::engine::matrix::*;
+use crate::engine::vec2::Vec2;
 
 pub struct LineSeg {
     pub p1: Vec2,

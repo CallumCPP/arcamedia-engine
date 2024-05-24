@@ -1,5 +1,5 @@
-use crate::gl;
-use crate::gl_objects::vertex_buffer::VertexBuffer;
+use crate::engine::gl;
+use crate::engine::gl_objects::vertex_buffer::VertexBuffer;
 use web_sys::{WebGl2RenderingContext, WebGlVertexArrayObject};
 
 pub struct VertexArray {

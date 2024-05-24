@@ -1,6 +1,6 @@
-use crate::camera::Camera;
+use crate::engine::camera::Camera;
 use crate::gl;
-use crate::transform::Transform;
+use crate::engine::transform::Transform;
 use web_sys::{WebGl2RenderingContext, WebGlProgram, WebGlShader, WebGlUniformLocation};
 
 #[derive(Clone)]

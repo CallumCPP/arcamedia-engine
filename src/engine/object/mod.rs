@@ -1,5 +1,5 @@
-use crate::shader::Shader;
-use crate::transform::Transform;
+use crate::engine::shader::Shader;
+use crate::engine::transform::Transform;
 
 pub mod player;
 pub mod rect;

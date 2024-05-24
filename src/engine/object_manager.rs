@@ -1,10 +1,9 @@
-use crate::camera::Camera;
-use crate::object::Object;
-use crate::shader_manager::sm;
-use crate::transform::Transform;
+use crate::engine::camera::Camera;
+use crate::engine::object::Object;
+use crate::engine::shader_manager::sm;
+use crate::engine::transform::Transform;
 use std::cell::RefCell;
 use std::rc::Rc;
-use std::ptr;
 
 #[macro_export]
 macro_rules! object {

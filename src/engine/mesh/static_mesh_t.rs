@@ -1,7 +1,7 @@
 use crate::gl;
-use crate::gl_objects::vertex_array::VertexArray;
-use crate::gl_objects::vertex_buffer::VertexBuffer;
-use crate::mesh::Mesh;
+use crate::engine::gl_objects::vertex_array::VertexArray;
+use crate::engine::gl_objects::vertex_buffer::VertexBuffer;
+use crate::engine::mesh::Mesh;
 use web_sys::WebGl2RenderingContext;
 
 pub struct StaticMeshT {

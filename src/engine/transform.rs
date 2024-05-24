@@ -1,5 +1,5 @@
-use crate::line_seg::LineSeg;
-use crate::vec2::Vec2;
+use crate::engine::line_seg::LineSeg;
+use crate::engine::vec2::Vec2;
 use js_sys::Math::{max, min};
 
 pub struct Transform {

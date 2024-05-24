@@ -1,4 +1,4 @@
-use crate::{gl, web};
+use crate::engine::{gl, web};
 use image::ImageFormat;
 use web_sys::{WebGl2RenderingContext, WebGlTexture};
 

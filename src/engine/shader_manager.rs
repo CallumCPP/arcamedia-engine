@@ -1,5 +1,5 @@
-use crate::camera::Camera;
-use crate::shader::Shader;
+use crate::engine::camera::Camera;
+use crate::engine::shader::Shader;
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 

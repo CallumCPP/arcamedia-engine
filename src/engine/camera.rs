@@ -1,6 +1,6 @@
-use crate::input::input;
-use crate::object_manager::om;
-use crate::vec2::Vec2;
+use crate::engine::input::input;
+use crate::engine::object_manager::om;
+use crate::engine::vec2::Vec2;
 
 pub struct Camera {
     pub position: Vec2,

@@ -1,8 +1,8 @@
-use crate::line_seg::LineSeg;
-use crate::object::Object;
-use crate::object_manager::om;
-use crate::transform::Transform;
-use crate::vec2::Vec2;
+use crate::engine::line_seg::LineSeg;
+use crate::engine::object::Object;
+use crate::engine::object_manager::om;
+use crate::engine::transform::Transform;
+use crate::engine::vec2::Vec2;
 use std::cell::RefCell;
 use std::rc::Rc;
 

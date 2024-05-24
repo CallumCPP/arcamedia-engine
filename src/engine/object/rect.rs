@@ -1,46 +1,36 @@
-use crate::input::input;
-use crate::mesh::static_mesh_t::StaticMeshT;
-use crate::mesh::Mesh;
+use crate::engine::mesh::static_mesh::StaticMesh;
+use crate::engine::mesh::Mesh;
 use crate::object::{Object, Transform};
-use crate::shader::Shader;
+use crate::engine::shader::Shader;
 use crate::shader_manager::sm;
-use crate::texture::Texture;
-use crate::vec2::Vec2;
+use crate::engine::vec2::Vec2;
 
-pub struct TexturedRect<'a> {
+pub struct Rect {
     transform: Transform,
-    mesh: StaticMeshT,
+    mesh: StaticMesh,
     shader: Shader,
     pub color: [f32; 4],
-    texture: &'a Texture,
-    collides: bool,
+    pub collides: bool,
     pub tags: Vec<String>,
 }
 
-impl<'a> TexturedRect<'a> {
+impl Rect {
     pub async fn new(
         position: Vec2,
         size: Vec2,
         rotation: f64,
         color: [f32; 4],
-        texture: &'a Texture,
         collides: bool,
     ) -> Self {
         let shader = sm()
-            .get_shader("textured_vert.glsl", "textured_frag.glsl")
+            .get_shader("colored_vert.glsl", "colored_frag.glsl")
             .await
             .clone();
 
         let transform = Transform::new(position, size, rotation);
 
-        #[rustfmt::skip]
-        let mesh = StaticMeshT::new(vec![
-            -0.5, -0.5,  0.0, 0.0,
-             0.5, -0.5,  1.0, 0.0,
-            -0.5,  0.5,  0.0, 1.0,
-             0.5, -0.5,  1.0, 0.0,
-             0.5,  0.5,  1.0, 1.0,
-            -0.5,  0.5,  0.0, 1.0,
+        let mesh = StaticMesh::new(vec![
+            -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5,
         ]);
 
         Self {
@@ -48,32 +38,19 @@ impl<'a> TexturedRect<'a> {
             mesh,
             shader,
             color,
-            texture,
             collides,
             tags: Vec::new(),
         }
     }
 }
 
-impl<'a> Object for TexturedRect<'a> {
+impl Object for Rect {
     fn draw(&self) {
-        self.texture.bind();
         self.shader
             .uniform4fv_with_f32_array("fragColor", &self.color);
-        self.shader.uniform1i("image", 0);
         self.shader.uniform_transform(&self.transform);
 
         self.mesh.draw();
-    }
-
-    fn tick(&mut self, _delta_time: f64) {
-        if input().key_was_pressed("KeyT") {
-            self.transform.rotation += 0.2;
-        }
-
-        if input().key_was_pressed("KeyY") {
-            self.transform.rotation -= 0.2;
-        }
     }
 
     fn transform(&self) -> &Transform {
@@ -106,5 +83,18 @@ impl<'a> Object for TexturedRect<'a> {
 
     fn tags_mut(&mut self) -> &mut Vec<String> {
         &mut self.tags
+    }
+}
+
+impl Clone for Rect {
+    fn clone(&self) -> Self {
+        Self {
+            shader: self.shader.clone(),
+            transform: self.transform().clone(),
+            mesh: self.mesh.clone(),
+            color: self.color.clone(),
+            collides: self.collides,
+            tags: self.tags.clone(),
+        }
     }
 }

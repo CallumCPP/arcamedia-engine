@@ -1,50 +1,22 @@
-use crate::input::{input, Input};
-use crate::object::player::Player;
-use crate::object::rect::Rect;
-use crate::object::textured_rect::TexturedRect;
-use crate::object_manager::{om, ObjectManager};
-use crate::shader_manager::{sm, ShaderManager};
-use crate::texture_manager::{tm, TextureManager};
 use std::cell::RefCell;
 use std::rc::Rc;
+use crate::engine::input::input;
+use crate::engine::object::player::Player;
+use crate::engine::object::rect::Rect;
+use crate::engine::object::textured_rect::TexturedRect;
+use crate::engine::object_manager::om;
+use crate::engine::texture_manager::tm;
 use std::time::Duration;
 use wasm_bindgen::prelude::*;
 use web_sys::WebGl2RenderingContext;
+use crate::engine::*;
+use crate::engine::timer::Timer;
 
-#[macro_use]
-mod web;
-mod camera;
-mod gl_objects;
-mod input;
-mod line_seg;
-mod matrix;
-mod mesh;
-mod object;
-mod object_manager;
-mod raycast;
-mod shader;
-mod shader_manager;
-mod texture;
-mod texture_manager;
-mod transform;
-mod vec2;
-
-static mut GL: Option<Box<WebGl2RenderingContext>> = None;
+mod engine;
 
 #[wasm_bindgen(start)]
 async fn run() -> Result<(), JsValue> {
-    let tmp_gl = Box::new(init_webgl());
-
-    unsafe {
-        GL = Some(tmp_gl);
-    }
-
-    let performance = web_sys::window().unwrap().performance().unwrap();
-
-    ShaderManager::init();
-    TextureManager::init();
-    ObjectManager::init();
-    Input::init();
+    Engine::init();
 
     let player = Player::new(
         [-100.0, 500.0].into(),
@@ -118,23 +90,21 @@ async fn run() -> Result<(), JsValue> {
     .await;
     object!(rect);
 
-    let mut last_time = performance.now();
+    let mut timer = Timer::new();
     loop {
         // log!("-----------");
-        let delta_time = (performance.now() - last_time) / 1000.0;
-        last_time = performance.now();
+        let delta_time = timer.elapsed_reset() / 1000.0;
         // log!("FPS: {}", 1.0 / delta_time);
 
         // gl().clear_color(random() as f32, random() as f32, random() as f32, 1.0);
         gl().clear_color(0.1, 0.1, 0.1, 1.0);
         gl().clear(WebGl2RenderingContext::COLOR_BUFFER_BIT);
 
-        // let mut timer = performance.now();
+        let mut timer2 = Timer::new();
         om().tick(delta_time);
-        // log!("Tick took {} milliseconds", performance.now() - timer);
-        // timer = performance.now();
+        log!("Tick took {} milliseconds", timer2.elapsed_reset());
         om().draw();
-        // log!("Draw took {} milliseconds", performance.now() - timer);
+        log!("Draw took {} milliseconds", timer2.elapsed_reset());
 
         input().flush_pressed_map();
 
@@ -142,31 +112,4 @@ async fn run() -> Result<(), JsValue> {
     }
 
     // Ok(())
-}
-
-fn init_webgl() -> WebGl2RenderingContext {
-    let document = web_sys::window().unwrap().document().unwrap();
-    let canvas = document.get_element_by_id("canvas").unwrap();
-    let canvas: web_sys::HtmlCanvasElement =
-        canvas.dyn_into::<web_sys::HtmlCanvasElement>().unwrap();
-
-    let gl = canvas
-        .get_context("webgl2")
-        .unwrap()
-        .unwrap()
-        .dyn_into::<WebGl2RenderingContext>()
-        .unwrap();
-
-    gl.enable(WebGl2RenderingContext::BLEND);
-
-    gl.blend_func(
-        WebGl2RenderingContext::SRC_ALPHA,
-        WebGl2RenderingContext::ONE_MINUS_SRC_ALPHA,
-    );
-
-    gl
-}
-
-fn gl() -> &'static WebGl2RenderingContext {
-    unsafe { GL.as_deref().expect("WebGL2 Context not initialized") }
 }
