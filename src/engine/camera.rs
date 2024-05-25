@@ -1,5 +1,3 @@
-use crate::engine::input::input;
-use crate::engine::object_manager::om;
 use crate::engine::vec2::Vec2;
 
 pub struct Camera {

@@ -87,7 +87,13 @@ impl Raycast {
         }
 
         for object in objects_to_check {
-            for line in object.borrow().transform().lines() {
+            let object_ref = object.borrow();
+            let transform = match object_ref.transform() {
+                None => continue,
+                Some(t) => t,
+            };
+
+            for line in transform.lines() {
                 match line.intersects(&self.ray) {
                     None => {}
                     Some(pos) => {

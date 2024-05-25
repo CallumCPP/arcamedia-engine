@@ -6,8 +6,8 @@ use web_sys::KeyboardEvent;
 static mut INPUT: Option<Box<Input>> = None;
 
 pub struct Input {
-    key_map: HashMap<String, bool>,
-    key_pressed_map: HashMap<String, bool>,
+    pub key_map: HashMap<String, bool>,
+    pub key_pressed_map: HashMap<String, bool>,
 }
 
 impl Input {
@@ -29,17 +29,12 @@ impl Input {
         let document = web_sys::window().unwrap().document().unwrap();
 
         let keydown_closure = Closure::new(Box::new(move |event: KeyboardEvent| {
-            match input().key_map.get(&event.code()) {
-                None => {
-                    input().key_pressed_map.insert(event.code(), true);
-                }
-                Some(down) => {
-                    if !down {
-                        input().key_pressed_map.insert(event.code(), true);
-                    }
-                }
-            }
+            let pressed = match input().key_map.get(&event.code()) {
+                None => { true }
+                Some(down) => { !down }
+            };
 
+            input().key_pressed_map.insert(event.code(), pressed);
             input().key_map.insert(event.code(), true);
         }) as Box<dyn FnMut(_)>);
 

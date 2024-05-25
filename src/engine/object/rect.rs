@@ -7,10 +7,10 @@ use crate::shader_manager::sm;
 
 pub struct Rect {
     transform: Transform,
-    mesh: StaticMesh,
     shader: Shader,
+    mesh: StaticMesh,
+    collides: bool,
     pub color: [f32; 4],
-    pub collides: bool,
     pub tags: Vec<String>,
 }
 
@@ -53,20 +53,20 @@ impl Object for Rect {
         self.mesh.draw();
     }
 
-    fn transform(&self) -> &Transform {
-        &self.transform
+    fn transform(&self) -> Option<&Transform> {
+        Some(&self.transform)
     }
 
-    fn transform_mut(&mut self) -> &mut Transform {
-        &mut self.transform
+    fn transform_mut(&mut self) -> Option<&mut Transform> {
+        Some(&mut self.transform)
     }
 
     fn set_transform(&mut self, transform: Transform) {
         self.transform = transform;
     }
 
-    fn shader(&self) -> &Shader {
-        &self.shader
+    fn shader(&self) -> Option<&Shader> {
+        Some(&self.shader)
     }
 
     fn collides(&self) -> bool {
@@ -90,7 +90,7 @@ impl Clone for Rect {
     fn clone(&self) -> Self {
         Self {
             shader: self.shader.clone(),
-            transform: self.transform().clone(),
+            transform: self.transform().unwrap().clone(),
             mesh: self.mesh.clone(),
             color: self.color.clone(),
             collides: self.collides,

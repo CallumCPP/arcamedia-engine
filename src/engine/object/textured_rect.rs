@@ -3,7 +3,6 @@ use crate::engine::mesh::Mesh;
 use crate::engine::shader::Shader;
 use crate::engine::texture::Texture;
 use crate::engine::vec2::Vec2;
-use crate::input::input;
 use crate::object::{Object, Transform};
 use crate::shader_manager::sm;
 
@@ -11,9 +10,9 @@ pub struct TexturedRect<'a> {
     transform: Transform,
     mesh: StaticMeshT,
     shader: Shader,
-    pub color: [f32; 4],
     texture: &'a Texture,
     collides: bool,
+    pub color: [f32; 4],
     pub tags: Vec<String>,
 }
 
@@ -66,30 +65,20 @@ impl<'a> Object for TexturedRect<'a> {
         self.mesh.draw();
     }
 
-    fn tick(&mut self, _delta_time: f64) {
-        if input().key_was_pressed("KeyT") {
-            self.transform.rotation += 0.2;
-        }
-
-        if input().key_was_pressed("KeyY") {
-            self.transform.rotation -= 0.2;
-        }
+    fn transform(&self) -> Option<&Transform> {
+        Some(&self.transform)
     }
 
-    fn transform(&self) -> &Transform {
-        &self.transform
-    }
-
-    fn transform_mut(&mut self) -> &mut Transform {
-        &mut self.transform
+    fn transform_mut(&mut self) -> Option<&mut Transform> {
+        Some(&mut self.transform)
     }
 
     fn set_transform(&mut self, transform: Transform) {
         self.transform = transform;
     }
 
-    fn shader(&self) -> &Shader {
-        &self.shader
+    fn shader(&self) -> Option<&Shader> {
+        Some(&self.shader)
     }
 
     fn collides(&self) -> bool {

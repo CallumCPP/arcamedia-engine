@@ -34,7 +34,7 @@ impl<'a> Player<'a> {
         let textured_rect =
             TexturedRect::new(position.clone(), size, rotation, color, texture, false).await;
 
-        let mut raycast_rect = Rect::new(
+        let raycast_rect = Rect::new(
             position.clone(),
             [5.0, 5.0].into(),
             PI / 4.0,
@@ -65,10 +65,10 @@ impl<'a> Player<'a> {
 
 impl Object for Player<'_> {
     fn draw(&self) {
-        self.textured_rect.shader().bind();
+        self.textured_rect.shader().unwrap().bind();
         self.textured_rect.draw();
 
-        self.raycast_rect.shader().bind();
+        self.raycast_rect.shader().unwrap().bind();
         self.raycast_rect.draw();
     }
 
@@ -92,15 +92,15 @@ impl Object for Player<'_> {
 
         let delta_position = &key_dir.normalize() * speed;
 
-        let old_position = self.transform().position.clone();
-        self.transform_mut().position += &delta_position;
+        let old_position = self.transform().unwrap().position.clone();
+        self.transform_mut().unwrap().position += &delta_position;
 
         for object in &om().objects_on_screen[1..] {
             let object = object.borrow();
-            let transform = object.transform();
+            let transform = object.transform().unwrap();
 
-            if object.collides() && transform.overlaps(self.transform()) {
-                self.transform_mut().position = old_position;
+            if object.collides() && transform.overlaps(self.transform().unwrap()) {
+                self.transform_mut().unwrap().position = old_position;
                 break;
             }
         }
@@ -119,16 +119,16 @@ impl Object for Player<'_> {
             raycast_length * sin(self.raycast_angle),
         );
 
-        self.raycast_rect.transform_mut().position =
-            &self.transform().position + &(&raycast_p2 / 2.0);
-        self.raycast_rect.transform_mut().rotation = self.raycast_angle;
-        self.raycast_rect.transform_mut().size.x = raycast_length;
+        self.raycast_rect.transform_mut().unwrap().position =
+            &self.transform().unwrap().position + &(&raycast_p2 / 2.0);
+        self.raycast_rect.transform_mut().unwrap().rotation = self.raycast_angle;
+        self.raycast_rect.transform_mut().unwrap().size.x = raycast_length;
 
-        raycast_p2 += &self.transform().position.clone();
+        raycast_p2 += &self.transform().unwrap().position.clone();
 
         if input().get_key_down("KeyF") {
             let mut rect = self.dummy_rect.clone();
-            rect.transform_mut().position = raycast_p2.clone();
+            rect.transform_mut().unwrap().position = raycast_p2.clone();
             rect.color[0] = random() as f32;
             rect.color[1] = random() as f32;
             rect.color[2] = random() as f32;
@@ -137,7 +137,10 @@ impl Object for Player<'_> {
         }
 
         if input().get_key_down("KeyR") {
-            let ray = LineSeg::new(self.transform().position.clone(), raycast_p2.clone());
+            let ray = LineSeg::new(
+                self.transform().unwrap().position.clone(),
+                raycast_p2.clone(),
+            );
 
             let mut raycast = Raycast::new(ray, ["player".into()].into());
             raycast.fire(FilterType::Blacklist);
@@ -145,13 +148,16 @@ impl Object for Player<'_> {
             match raycast.hit {
                 None => {}
                 Some(hit) => {
-                    hit.object.borrow_mut().transform_mut().rotation += 8.0 * delta_time;
+                    hit.object.borrow_mut().transform_mut().unwrap().rotation += 8.0 * delta_time;
                 }
             }
         }
 
         if input().get_key_down("KeyG") {
-            let ray = LineSeg::new(self.transform().position.clone(), raycast_p2.clone());
+            let ray = LineSeg::new(
+                self.transform().unwrap().position.clone(),
+                raycast_p2.clone(),
+            );
 
             let mut raycast = Raycast::new(ray, ["player".into()].into());
             raycast.fire(FilterType::Blacklist);
@@ -165,11 +171,11 @@ impl Object for Player<'_> {
         }
     }
 
-    fn transform(&self) -> &Transform {
+    fn transform(&self) -> Option<&Transform> {
         self.textured_rect.transform()
     }
 
-    fn transform_mut(&mut self) -> &mut Transform {
+    fn transform_mut(&mut self) -> Option<&mut Transform> {
         self.textured_rect.transform_mut()
     }
 
@@ -177,7 +183,7 @@ impl Object for Player<'_> {
         self.textured_rect.set_transform(transform);
     }
 
-    fn shader(&self) -> &Shader {
+    fn shader(&self) -> Option<&Shader> {
         self.textured_rect.shader()
     }
 

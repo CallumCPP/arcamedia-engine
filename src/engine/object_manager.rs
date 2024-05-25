@@ -56,12 +56,13 @@ impl ObjectManager {
     }
 
     pub fn remove_object_tag(&mut self, tag: String) {
-        for i in 1..self.objects.len() {
-            if self.objects[i].borrow().tags().contains(&tag) {
-                self.objects.remove(i);
-                return;
+        self.objects.retain(|object| {
+            if let Ok(object) = object.try_borrow() {
+                !object.tags().contains(&tag)
+            } else {
+                true
             }
-        }
+        });
     }
 
     pub fn tick(&mut self, delta_time: f64) {
@@ -77,20 +78,20 @@ impl ObjectManager {
 
     pub fn draw(&self) {
         let mut curr_shader_id = -1;
-        for object in &self.objects_on_screen[1..] {
+        for object in &self.objects_on_screen {
             let object = object.borrow();
-            let shader = object.shader();
-
-            if shader.id() != curr_shader_id {
-                curr_shader_id = shader.id();
-                shader.bind();
-            }
+            match object.shader() {
+                None => {}
+                Some(shader) => {
+                    if shader.id() != curr_shader_id {
+                        curr_shader_id = shader.id();
+                        shader.bind();
+                    }
+                }
+            };
 
             object.draw();
         }
-
-        self.objects[0].borrow().shader().bind();
-        self.objects[0].borrow().draw();
     }
 
     pub fn objects_in_bounds(&self, transform: &Transform) -> Vec<Rc<RefCell<dyn Object>>> {
@@ -104,9 +105,14 @@ impl ObjectManager {
                 }
             };
 
-            if object_ref.transform().overlaps_lazy(transform) {
-                objects_in_bounds.push(object.clone());
-            }
+            match object_ref.transform() {
+                None => {}
+                Some(transform2) => {
+                    if transform2.overlaps_lazy(transform) {
+                        objects_in_bounds.push(object.clone());
+                    }
+                }
+            };
         }
 
         objects_in_bounds

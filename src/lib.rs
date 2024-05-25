@@ -1,16 +1,13 @@
 use crate::engine::input::input;
-use crate::engine::object::snake::Snake;
+use crate::engine::object::snake_game::SnakeGame;
 use crate::engine::object_manager::om;
-use crate::engine::texture_manager::tm;
 use crate::engine::timer::Timer;
 use crate::engine::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::time::Duration;
-use js_sys::Math::random;
 use wasm_bindgen::prelude::*;
 use web_sys::WebGl2RenderingContext;
-use crate::engine::object::Object;
 
 mod engine;
 
@@ -18,13 +15,7 @@ mod engine;
 async fn run() -> Result<(), JsValue> {
     Engine::init();
 
-    let snake = Snake::new(
-        200.0,
-        [0.0, 0.0].into(),
-        tm().get_texture("snake head.png").await,
-        [1000.0, 1000.0].into(),
-    )
-    .await;
+    let snake = SnakeGame::new([1000.0, 1000.0].into()).await;
     object!(snake);
 
     let mut timer = Timer::new();
@@ -35,7 +26,7 @@ async fn run() -> Result<(), JsValue> {
 
         // log!("-----------");
         let delta_time = timer.elapsed_reset() / 1000.0;
-        log!("FPS: {}", 1.0 / delta_time);
+        // log!("FPS: {}", 1.0 / delta_time);
 
         // gl().clear_color(random() as f32, random() as f32, random() as f32, 1.0);
         gl().clear_color(0.1, 0.1, 0.1, 1.0);

@@ -3,17 +3,23 @@ use crate::engine::transform::Transform;
 
 pub mod player;
 pub mod rect;
-pub mod snake;
+pub mod snake_game;
 pub mod textured_rect;
 
 pub trait Object {
-    fn draw(&self);
+    fn draw(&self) {}
     fn init(&mut self) {}
     fn tick(&mut self, _delta_time: f64) {}
-    fn transform(&self) -> &Transform;
-    fn transform_mut(&mut self) -> &mut Transform;
-    fn set_transform(&mut self, transform: Transform);
-    fn shader(&self) -> &Shader;
+    fn transform(&self) -> Option<&Transform> {
+        None
+    }
+    fn transform_mut(&mut self) -> Option<&mut Transform> {
+        None
+    }
+    fn set_transform(&mut self, _transform: Transform) {}
+    fn shader(&self) -> Option<&Shader> {
+        None
+    }
     fn collides(&self) -> bool {
         false
     }

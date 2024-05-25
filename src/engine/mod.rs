@@ -30,7 +30,10 @@ pub fn gl() -> &'static WebGl2RenderingContext {
 }
 
 pub fn exit() {
-    web_sys::window().unwrap().open_with_url_and_target("https://lncn.ac/rarcade", "_parent").expect("Should be able to open arcade menu.");
+    web_sys::window()
+        .unwrap()
+        .open_with_url_and_target("https://lncn.ac/rarcade", "_parent")
+        .expect("Should be able to open arcade menu.");
 }
 
 pub struct Engine {}
