@@ -1,14 +1,14 @@
-use crate::input::input;
 use crate::engine::line_seg::LineSeg;
+use crate::engine::raycast::{FilterType, Raycast};
+use crate::engine::shader::Shader;
+use crate::engine::texture::Texture;
+use crate::engine::vec2::Vec2;
+use crate::input::input;
 use crate::object;
 use crate::object::rect::Rect;
 use crate::object::textured_rect::TexturedRect;
 use crate::object::{Object, Transform};
 use crate::object_manager::om;
-use crate::engine::raycast::{FilterType, Raycast};
-use crate::engine::shader::Shader;
-use crate::engine::texture::Texture;
-use crate::engine::vec2::Vec2;
 use js_sys::Math::{cos, random, sin};
 use std::cell::RefCell;
 use std::f64::consts::PI;
@@ -63,7 +63,7 @@ impl<'a> Player<'a> {
     }
 }
 
-impl<'a> Object for Player<'a> {
+impl Object for Player<'_> {
     fn draw(&self) {
         self.textured_rect.shader().bind();
         self.textured_rect.draw();
@@ -137,10 +137,7 @@ impl<'a> Object for Player<'a> {
         }
 
         if input().get_key_down("KeyR") {
-            let ray = LineSeg::new(
-                self.transform().position.clone(),
-                raycast_p2.clone(),
-            );
+            let ray = LineSeg::new(self.transform().position.clone(), raycast_p2.clone());
 
             let mut raycast = Raycast::new(ray, ["player".into()].into());
             raycast.fire(FilterType::Blacklist);
@@ -154,10 +151,7 @@ impl<'a> Object for Player<'a> {
         }
 
         if input().get_key_down("KeyG") {
-            let ray = LineSeg::new(
-                self.transform().position.clone(),
-                raycast_p2.clone(),
-            );
+            let ray = LineSeg::new(self.transform().position.clone(), raycast_p2.clone());
 
             let mut raycast = Raycast::new(ray, ["player".into()].into());
             raycast.fire(FilterType::Blacklist);

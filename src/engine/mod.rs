@@ -1,9 +1,9 @@
-use wasm_bindgen::JsCast;
-use web_sys::WebGl2RenderingContext;
 use crate::engine::input::Input;
 use crate::engine::object_manager::ObjectManager;
 use crate::engine::shader_manager::ShaderManager;
 use crate::engine::texture_manager::TextureManager;
+use wasm_bindgen::JsCast;
+use web_sys::WebGl2RenderingContext;
 
 #[macro_use]
 pub mod web;
@@ -20,13 +20,17 @@ mod shader;
 pub mod shader_manager;
 mod texture;
 pub mod texture_manager;
+pub mod timer;
 mod transform;
 mod vec2;
-pub mod timer;
 
 static mut GL: Option<Box<WebGl2RenderingContext>> = None;
 pub fn gl() -> &'static WebGl2RenderingContext {
     unsafe { GL.as_deref().expect("WebGL2 Context not initialized") }
+}
+
+pub fn exit() {
+    web_sys::window().unwrap().open_with_url_and_target("https://lncn.ac/rarcade", "_parent").expect("Should be able to open arcade menu.");
 }
 
 pub struct Engine {}

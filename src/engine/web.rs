@@ -2,7 +2,8 @@ use js_sys::Uint8Array;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
-#[macro_export] macro_rules! log {
+#[macro_export]
+macro_rules! log {
     ( $( $t:tt )* ) => {
         web_sys::console::log_1(&format!( $( $t )* ).into());
     }
@@ -32,7 +33,12 @@ pub async fn get_bytes(url: &str) -> Result<Vec<u8>, JsValue> {
 }
 
 pub fn add_text_field(title: &str, id: &str) {
-    let overlay = web_sys::window().unwrap().document().unwrap().get_element_by_id("overlay").unwrap();
+    let overlay = web_sys::window()
+        .unwrap()
+        .document()
+        .unwrap()
+        .get_element_by_id("overlay")
+        .unwrap();
 
     let mut new_html = overlay.inner_html();
     new_html += "\n";

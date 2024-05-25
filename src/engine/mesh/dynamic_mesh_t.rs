@@ -1,7 +1,7 @@
-use crate::gl;
 use crate::engine::gl_objects::vertex_array::VertexArray;
 use crate::engine::gl_objects::vertex_buffer::VertexBuffer;
 use crate::engine::mesh::Mesh;
+use crate::gl;
 use web_sys::WebGl2RenderingContext;
 
 pub struct DynamicMeshT {

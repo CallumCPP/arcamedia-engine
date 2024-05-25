@@ -8,7 +8,8 @@ use std::rc::Rc;
 #[macro_export]
 macro_rules! object {
     ($object: expr) => {
-        om().add_object(Rc::new(RefCell::new($object)))
+        om().add_object(Rc::new(RefCell::new($object)));
+        om().objects.last().unwrap().borrow_mut().init()
     };
 }
 
@@ -48,6 +49,15 @@ impl ObjectManager {
     pub fn remove_object(&mut self, object: Rc<RefCell<dyn Object>>) {
         for i in 1..self.objects.len() {
             if Rc::ptr_eq(&self.objects[i], &object) {
+                self.objects.remove(i);
+                return;
+            }
+        }
+    }
+
+    pub fn remove_object_tag(&mut self, tag: String) {
+        for i in 1..self.objects.len() {
+            if self.objects[i].borrow().tags().contains(&tag) {
                 self.objects.remove(i);
                 return;
             }

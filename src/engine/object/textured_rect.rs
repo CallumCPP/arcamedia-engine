@@ -1,11 +1,11 @@
-use crate::input::input;
 use crate::engine::mesh::static_mesh_t::StaticMeshT;
 use crate::engine::mesh::Mesh;
-use crate::object::{Object, Transform};
 use crate::engine::shader::Shader;
-use crate::shader_manager::sm;
 use crate::engine::texture::Texture;
 use crate::engine::vec2::Vec2;
+use crate::input::input;
+use crate::object::{Object, Transform};
+use crate::shader_manager::sm;
 
 pub struct TexturedRect<'a> {
     transform: Transform,

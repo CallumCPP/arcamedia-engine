@@ -1,12 +1,11 @@
 pub struct Timer {
     start_time: f64,
-
 }
 
 impl Timer {
     pub fn new() -> Self {
         Self {
-            start_time: web_sys::window().unwrap().performance().unwrap().now()
+            start_time: web_sys::window().unwrap().performance().unwrap().now(),
         }
     }
 

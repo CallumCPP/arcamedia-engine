@@ -1,5 +1,5 @@
-use crate::gl;
 use crate::engine::texture::Texture;
+use crate::gl;
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use web_sys::WebGl2RenderingContext;

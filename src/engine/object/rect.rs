@@ -1,9 +1,9 @@
 use crate::engine::mesh::static_mesh::StaticMesh;
 use crate::engine::mesh::Mesh;
-use crate::object::{Object, Transform};
 use crate::engine::shader::Shader;
-use crate::shader_manager::sm;
 use crate::engine::vec2::Vec2;
+use crate::object::{Object, Transform};
+use crate::shader_manager::sm;
 
 pub struct Rect {
     transform: Transform,
