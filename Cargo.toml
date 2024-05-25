@@ -20,4 +20,4 @@ wasm-bindgen-test = "0.3.42"
 
 [dependencies.web-sys]
 version = "0.3.4"
-features = ["Document", "Element", "HtmlCanvasElement", "WebGlBuffer", "WebGlVertexArrayObject", "WebGl2RenderingContext", "WebGlProgram", "WebGlShader", "Window", "WebGlUniformLocation", "Headers", "Request", "RequestInit", "RequestMode", "Response", "console", "KeyboardEvent", "Performance", "WebGlTexture", "Blob", "FileReader"]
+features = ["Document", "Element", "HtmlCanvasElement", "WebGlBuffer", "WebGlVertexArrayObject", "WebGl2RenderingContext", "WebGlProgram", "WebGlShader", "Window", "WebGlUniformLocation", "Headers", "Request", "RequestInit", "RequestMode", "Response", "console", "KeyboardEvent", "Performance", "WebGlTexture", "Blob", "FileReader", "CanvasRenderingContext2d"]

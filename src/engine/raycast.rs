@@ -2,7 +2,7 @@ use crate::engine::line_seg::LineSeg;
 use crate::engine::object::Object;
 use crate::engine::object_manager::om;
 use crate::engine::transform::Transform;
-use crate::engine::vec2::Vec2;
+use crate::engine::vec2f::Vec2f;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -20,7 +20,7 @@ pub struct Raycast {
 
 pub struct RaycastHit {
     pub object: Rc<RefCell<dyn Object>>,
-    pub pos: Vec2,
+    pub pos: Vec2f,
     pub distance: f64,
 }
 

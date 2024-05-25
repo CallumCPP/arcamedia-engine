@@ -2,12 +2,12 @@ use js_sys::Math::{cos, sin, sqrt};
 use std::ops;
 
 #[derive(PartialEq, Debug)]
-pub struct Vec2 {
+pub struct Vec2f {
     pub x: f64,
     pub y: f64,
 }
 
-impl Vec2 {
+impl Vec2f {
     pub fn new(x: f64, y: f64) -> Self {
         Self { x, y }
     }
@@ -33,7 +33,7 @@ impl Vec2 {
         sqrt(self.x * self.x + self.y * self.y)
     }
 
-    pub fn dot(&self, other: &Vec2) -> f64 {
+    pub fn dot(&self, other: &Vec2f) -> f64 {
         self.x * other.x + self.y * other.y
     }
 
@@ -52,7 +52,7 @@ impl Vec2 {
     }
 }
 
-impl Clone for Vec2 {
+impl Clone for Vec2f {
     fn clone(&self) -> Self {
         Self {
             x: self.x,
@@ -61,7 +61,7 @@ impl Clone for Vec2 {
     }
 }
 
-impl From<[f64; 2]> for Vec2 {
+impl From<[f64; 2]> for Vec2f {
     fn from(value: [f64; 2]) -> Self {
         Self {
             x: value[0],
@@ -70,16 +70,16 @@ impl From<[f64; 2]> for Vec2 {
     }
 }
 
-impl From<Vec2> for [f64; 2] {
-    fn from(value: Vec2) -> Self {
+impl From<Vec2f> for [f64; 2] {
+    fn from(value: Vec2f) -> Self {
         [value.x, value.y]
     }
 }
 
-impl ops::Add<&Vec2> for &Vec2 {
-    type Output = Vec2;
+impl ops::Add<&Vec2f> for &Vec2f {
+    type Output = Vec2f;
 
-    fn add(self, rhs: &Vec2) -> Self::Output {
+    fn add(self, rhs: &Vec2f) -> Self::Output {
         Self::Output {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
@@ -87,17 +87,17 @@ impl ops::Add<&Vec2> for &Vec2 {
     }
 }
 
-impl ops::AddAssign<&Vec2> for Vec2 {
-    fn add_assign(&mut self, rhs: &Vec2) {
+impl ops::AddAssign<&Vec2f> for Vec2f {
+    fn add_assign(&mut self, rhs: &Vec2f) {
         self.x += rhs.x;
         self.y += rhs.y;
     }
 }
 
-impl ops::Sub<&Vec2> for &Vec2 {
-    type Output = Vec2;
+impl ops::Sub<&Vec2f> for &Vec2f {
+    type Output = Vec2f;
 
-    fn sub(self, rhs: &Vec2) -> Self::Output {
+    fn sub(self, rhs: &Vec2f) -> Self::Output {
         Self::Output {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
@@ -105,15 +105,15 @@ impl ops::Sub<&Vec2> for &Vec2 {
     }
 }
 
-impl ops::SubAssign<&Vec2> for Vec2 {
-    fn sub_assign(&mut self, rhs: &Vec2) {
+impl ops::SubAssign<&Vec2f> for Vec2f {
+    fn sub_assign(&mut self, rhs: &Vec2f) {
         self.x -= rhs.x;
         self.y -= rhs.y;
     }
 }
 
-impl ops::Mul<f64> for &Vec2 {
-    type Output = Vec2;
+impl ops::Mul<f64> for &Vec2f {
+    type Output = Vec2f;
 
     fn mul(self, rhs: f64) -> Self::Output {
         Self::Output {
@@ -123,15 +123,15 @@ impl ops::Mul<f64> for &Vec2 {
     }
 }
 
-impl ops::MulAssign<&Vec2> for Vec2 {
-    fn mul_assign(&mut self, rhs: &Vec2) {
+impl ops::MulAssign<&Vec2f> for Vec2f {
+    fn mul_assign(&mut self, rhs: &Vec2f) {
         self.x *= rhs.x;
         self.y *= rhs.y;
     }
 }
 
-impl ops::Div<f64> for &Vec2 {
-    type Output = Vec2;
+impl ops::Div<f64> for &Vec2f {
+    type Output = Vec2f;
 
     fn div(self, rhs: f64) -> Self::Output {
         Self::Output {
@@ -141,8 +141,8 @@ impl ops::Div<f64> for &Vec2 {
     }
 }
 
-impl ops::DivAssign<&Vec2> for Vec2 {
-    fn div_assign(&mut self, rhs: &Vec2) {
+impl ops::DivAssign<&Vec2f> for Vec2f {
+    fn div_assign(&mut self, rhs: &Vec2f) {
         self.x /= rhs.x;
         self.y /= rhs.y;
     }

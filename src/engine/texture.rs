@@ -1,9 +1,11 @@
+use crate::engine::vec2i::Vec2i;
 use crate::engine::{gl, web};
 use image::ImageFormat;
 use web_sys::{WebGl2RenderingContext, WebGlTexture};
 
 pub struct Texture {
     web_gl_texture: WebGlTexture,
+    pub size: Vec2i,
 }
 
 impl Texture {
@@ -40,9 +42,6 @@ impl Texture {
             WebGl2RenderingContext::NEAREST as i32,
         );
 
-        log!("{}", img.width());
-        log!("{}", img.height());
-
         let (format, data_type) = match img.color() {
             image::ColorType::L8 => (
                 WebGl2RenderingContext::LUMINANCE,
@@ -76,7 +75,10 @@ impl Texture {
         )
         .expect("Should be able to upload image");
 
-        Self { web_gl_texture }
+        Self {
+            web_gl_texture,
+            size: [img.width() as i32, img.height() as i32].into(),
+        }
     }
 
     pub fn bind(&self) {

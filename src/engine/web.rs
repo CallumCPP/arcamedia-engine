@@ -31,18 +31,3 @@ pub async fn get_bytes(url: &str) -> Result<Vec<u8>, JsValue> {
         Err(JsValue::from_str("Failed to fetch bytes from server"))
     }
 }
-
-pub fn add_text_field(title: &str, id: &str) {
-    let overlay = web_sys::window()
-        .unwrap()
-        .document()
-        .unwrap()
-        .get_element_by_id("overlay")
-        .unwrap();
-
-    let mut new_html = overlay.inner_html();
-    new_html += "\n";
-    new_html += format!("<div>{title}: <span id=\"{id}\"></span></div>").as_str();
-
-    overlay.set_inner_html(new_html.as_str());
-}

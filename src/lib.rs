@@ -13,7 +13,7 @@ mod engine;
 
 #[wasm_bindgen(start)]
 async fn run() -> Result<(), JsValue> {
-    Engine::init();
+    Engine::init().await;
 
     let snake = SnakeGame::new([1000.0, 1000.0].into()).await;
     object!(snake);

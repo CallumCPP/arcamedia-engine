@@ -8,7 +8,7 @@ use crate::engine::shader::Shader;
 use crate::engine::texture::Texture;
 use crate::engine::timer::Timer;
 use crate::engine::transform::Transform;
-use crate::engine::vec2::Vec2;
+use crate::engine::vec2f::Vec2f;
 use std::cmp::PartialEq;
 use std::f64::consts::PI;
 
@@ -22,14 +22,15 @@ enum Direction {
 }
 
 pub struct Snake<'a> {
-    speed: f64,
+    pub speed: f64,
+    start_speed: f64,
     pub head_rect: TexturedRect<'a>,
     movement_timer: Timer,
     movement_carry: f64,
     direction: Direction,
     movement_queue: Vec<Direction>,
-    dead: bool,
-    pub prev_head_position: Vec2,
+    pub dead: bool,
+    pub prev_head_position: Vec2f,
     dummy_segment: Segment,
     pub tail: Vec<Segment>,
     tags: Vec<String>,
@@ -37,7 +38,7 @@ pub struct Snake<'a> {
 }
 
 impl<'a> Snake<'a> {
-    pub async fn new(speed: f64, position: Vec2, texture: &'a Texture) -> Self {
+    pub async fn new(speed: f64, position: Vec2f, texture: &'a Texture) -> Self {
         let head_rect = TexturedRect::new(
             position.clone(),
             [TILE_SIZE, TILE_SIZE].into(),
@@ -58,6 +59,7 @@ impl<'a> Snake<'a> {
 
         Self {
             speed,
+            start_speed: speed,
             head_rect,
             movement_timer,
             movement_carry: 0.0,
@@ -97,6 +99,15 @@ impl<'a> Snake<'a> {
 
         self.dead = true;
     }
+
+    pub fn reset(&mut self) {
+        self.dead = false;
+        self.tail.clear();
+        self.transform_mut().unwrap().position = [0.0, 0.0].into();
+        self.speed = self.start_speed;
+        self.movement_timer.elapsed_reset();
+        self.direction = Still;
+    }
 }
 
 impl Object for Snake<'_> {
@@ -121,30 +132,30 @@ impl Object for Snake<'_> {
             return;
         }
 
+        if input().key_was_pressed("KeyS") {
+            self.add_segment();
+        }
+
         let distance_to_move =
             (self.movement_timer.elapsed() / 1000.0) * self.speed + self.movement_carry;
-
 
         for key in input().key_pressed_map.keys() {
             let last_move = match self.movement_queue.last() {
                 None => self.direction,
-                Some(dir) => { *dir },
+                Some(dir) => *dir,
             };
 
             if key == "ArrowUp" && last_move != Down {
                 self.movement_queue.push(Up);
-            }
-            else if key == "ArrowDown" && last_move != Up {
+            } else if key == "ArrowDown" && last_move != Up {
                 self.movement_queue.push(Down);
-            }
-            else if key == "ArrowLeft" && last_move != Right {
+            } else if key == "ArrowLeft" && last_move != Right {
                 self.movement_queue.push(Left);
-            }
-            else if key == "ArrowRight" && last_move != Left {
+            } else if key == "ArrowRight" && last_move != Left {
                 self.movement_queue.push(Right);
             }
         }
-
+        
         if distance_to_move >= TILE_SIZE {
             self.movement_timer.elapsed_reset();
             self.movement_carry = distance_to_move - TILE_SIZE;
@@ -173,7 +184,6 @@ impl Object for Snake<'_> {
                     Still
                 };
             }
-
 
             if next_direction != Still {
                 self.direction = next_direction;

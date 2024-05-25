@@ -1,6 +1,7 @@
 use crate::engine::input::Input;
 use crate::engine::object_manager::ObjectManager;
 use crate::engine::shader_manager::ShaderManager;
+use crate::engine::text_renderer::TextRenderer;
 use crate::engine::texture_manager::TextureManager;
 use wasm_bindgen::JsCast;
 use web_sys::WebGl2RenderingContext;
@@ -18,11 +19,13 @@ pub mod object_manager;
 mod raycast;
 mod shader;
 pub mod shader_manager;
+mod text_renderer;
 mod texture;
 pub mod texture_manager;
 pub mod timer;
 mod transform;
-mod vec2;
+mod vec2f;
+mod vec2i;
 
 static mut GL: Option<Box<WebGl2RenderingContext>> = None;
 pub fn gl() -> &'static WebGl2RenderingContext {
@@ -39,7 +42,7 @@ pub fn exit() {
 pub struct Engine {}
 
 impl Engine {
-    pub fn init() {
+    pub async fn init() {
         let document = web_sys::window().unwrap().document().unwrap();
         let canvas = document.get_element_by_id("canvas").unwrap();
         let canvas: web_sys::HtmlCanvasElement =
@@ -67,5 +70,6 @@ impl Engine {
         TextureManager::init();
         ObjectManager::init();
         Input::init();
+        TextRenderer::init().await;
     }
 }

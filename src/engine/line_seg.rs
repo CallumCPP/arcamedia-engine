@@ -1,13 +1,13 @@
 use crate::engine::matrix::*;
-use crate::engine::vec2::Vec2;
+use crate::engine::vec2f::Vec2f;
 
 pub struct LineSeg {
-    pub p1: Vec2,
-    pub p2: Vec2,
+    pub p1: Vec2f,
+    pub p2: Vec2f,
 }
 
 impl LineSeg {
-    pub fn new(p1: Vec2, p2: Vec2) -> Self {
+    pub fn new(p1: Vec2f, p2: Vec2f) -> Self {
         Self { p1, p2 }
     }
 
@@ -23,7 +23,7 @@ impl LineSeg {
         self.p2.y - self.p1.y
     }
 
-    pub fn intersects(&self, other: &LineSeg) -> Option<Vec2> {
+    pub fn intersects(&self, other: &LineSeg) -> Option<Vec2f> {
         // Parametric equations
         // (x(s), y(s)) = (p1.x + s(p2.x-p1.x), p1.y + s(p2.y-p1.y))
         // The point at s along the line
@@ -50,7 +50,7 @@ impl LineSeg {
         let x = &a.inverse() * &b;
 
         if (0.0..=1.0).contains(&x.data[0]) && (0.0..=1.0).contains(&x.data[1]) {
-            Some(Vec2::new(
+            Some(Vec2f::new(
                 self.p1.x + x.data[0] * (self.p2.x - self.p1.x),
                 self.p1.y + x.data[0] * (self.p2.y - self.p1.y),
             ))

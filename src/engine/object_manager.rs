@@ -15,6 +15,13 @@ macro_rules! object {
 
 static mut OM: Option<Box<ObjectManager>> = None;
 
+pub fn om() -> &'static mut ObjectManager {
+    unsafe {
+        OM.as_deref_mut()
+            .expect("Object manager should be initialized")
+    }
+}
+
 pub struct ObjectManager {
     pub objects: Vec<Rc<RefCell<dyn Object>>>,
     pub objects_on_screen: Vec<Rc<RefCell<dyn Object>>>,
@@ -116,12 +123,5 @@ impl ObjectManager {
         }
 
         objects_in_bounds
-    }
-}
-
-pub fn om() -> &'static mut ObjectManager {
-    unsafe {
-        OM.as_deref_mut()
-            .expect("Shader manager should be initialized")
     }
 }

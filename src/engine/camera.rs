@@ -1,12 +1,12 @@
-use crate::engine::vec2::Vec2;
+use crate::engine::vec2f::Vec2f;
 
 pub struct Camera {
-    pub position: Vec2,
+    pub position: Vec2f,
     pub zoom: f64,
 }
 
 impl Camera {
-    pub fn new(position: Vec2, zoom: f64) -> Self {
+    pub fn new(position: Vec2f, zoom: f64) -> Self {
         Self { position, zoom }
     }
 

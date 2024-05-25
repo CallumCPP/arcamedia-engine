@@ -5,6 +5,13 @@ use std::collections::HashMap;
 
 static mut SM: Option<Box<ShaderManager>> = None;
 
+pub fn sm() -> &'static mut ShaderManager {
+    unsafe {
+        SM.as_deref_mut()
+            .expect("Shader manager should be initialized")
+    }
+}
+
 pub struct ShaderManager {
     shaders: HashMap<String, Shader>,
     curr_id: i32,
@@ -42,12 +49,5 @@ impl ShaderManager {
             shader.bind();
             shader.uniform_camera(camera);
         }
-    }
-}
-
-pub fn sm() -> &'static mut ShaderManager {
-    unsafe {
-        SM.as_deref_mut()
-            .expect("Shader manager should be initialized")
     }
 }

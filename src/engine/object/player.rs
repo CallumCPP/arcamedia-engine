@@ -2,7 +2,7 @@ use crate::engine::line_seg::LineSeg;
 use crate::engine::raycast::{FilterType, Raycast};
 use crate::engine::shader::Shader;
 use crate::engine::texture::Texture;
-use crate::engine::vec2::Vec2;
+use crate::engine::vec2f::Vec2f;
 use crate::input::input;
 use crate::object;
 use crate::object::rect::Rect;
@@ -25,8 +25,8 @@ pub struct Player<'a> {
 
 impl<'a> Player<'a> {
     pub async fn new(
-        position: Vec2,
-        size: Vec2,
+        position: Vec2f,
+        size: Vec2f,
         rotation: f64,
         color: [f32; 4],
         texture: &'a Texture,
@@ -73,7 +73,7 @@ impl Object for Player<'_> {
     }
 
     fn tick(&mut self, delta_time: f64) {
-        let mut key_dir = Vec2::new(0.0, 0.0);
+        let mut key_dir = Vec2f::new(0.0, 0.0);
 
         if input().get_key_down("KeyW") {
             key_dir.y += 1.0;
@@ -114,7 +114,7 @@ impl Object for Player<'_> {
         }
 
         let raycast_length = 500.0;
-        let mut raycast_p2 = Vec2::new(
+        let mut raycast_p2 = Vec2f::new(
             raycast_length * cos(self.raycast_angle),
             raycast_length * sin(self.raycast_angle),
         );

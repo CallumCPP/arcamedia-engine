@@ -2,7 +2,7 @@ use crate::engine::mesh::static_mesh_t::StaticMeshT;
 use crate::engine::mesh::Mesh;
 use crate::engine::shader::Shader;
 use crate::engine::texture::Texture;
-use crate::engine::vec2::Vec2;
+use crate::engine::vec2f::Vec2f;
 use crate::object::{Object, Transform};
 use crate::shader_manager::sm;
 
@@ -18,8 +18,8 @@ pub struct TexturedRect<'a> {
 
 impl<'a> TexturedRect<'a> {
     pub async fn new(
-        position: Vec2,
-        size: Vec2,
+        position: Vec2f,
+        size: Vec2f,
         rotation: f64,
         color: [f32; 4],
         texture: &'a Texture,

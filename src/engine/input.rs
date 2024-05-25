@@ -30,8 +30,8 @@ impl Input {
 
         let keydown_closure = Closure::new(Box::new(move |event: KeyboardEvent| {
             let pressed = match input().key_map.get(&event.code()) {
-                None => { true }
-                Some(down) => { !down }
+                None => true,
+                Some(down) => !down,
             };
 
             input().key_pressed_map.insert(event.code(), pressed);

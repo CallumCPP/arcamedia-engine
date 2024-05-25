@@ -3,13 +3,13 @@ use crate::engine::object::snake_game::TILE_SIZE;
 use crate::engine::object::Object;
 use crate::engine::shader::Shader;
 use crate::engine::transform::Transform;
-use crate::engine::vec2::Vec2;
+use crate::engine::vec2f::Vec2f;
 
 #[derive(Clone)]
 pub struct Segment {
     tags: Vec<String>,
     pub rect: Rect,
-    prev_position: Vec2,
+    prev_position: Vec2f,
 }
 
 impl Segment {
@@ -30,7 +30,7 @@ impl Segment {
         }
     }
 
-    pub fn update_pos(&mut self, position: Vec2) {
+    pub fn update_pos(&mut self, position: Vec2f) {
         self.prev_position = self.transform().unwrap().position.clone();
         self.transform_mut().unwrap().position = position;
     }

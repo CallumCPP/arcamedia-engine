@@ -1,15 +1,15 @@
 use crate::engine::line_seg::LineSeg;
-use crate::engine::vec2::Vec2;
+use crate::engine::vec2f::Vec2f;
 use js_sys::Math::{max, min};
 
 pub struct Transform {
-    pub position: Vec2,
-    pub size: Vec2,
+    pub position: Vec2f,
+    pub size: Vec2f,
     pub rotation: f64,
 }
 
 impl Transform {
-    pub fn new(position: Vec2, size: Vec2, rotation: f64) -> Self {
+    pub fn new(position: Vec2f, size: Vec2f, rotation: f64) -> Self {
         Self {
             position,
             size,
@@ -21,7 +21,7 @@ impl Transform {
         let vertices1 = self.vertices();
         let vertices2 = other.vertices();
 
-        let mut normals: Vec<Vec2> = self.normals(&vertices1);
+        let mut normals: Vec<Vec2f> = self.normals(&vertices1);
         normals.extend(other.normals(&vertices2));
 
         for normal in normals {
@@ -41,10 +41,10 @@ impl Transform {
         let other_half_size = &other.size.abs() / 2.0;
 
         let rotated_corners = [
-            Vec2::new(self_half_size.x, self_half_size.y).rotated(self.rotation),
-            Vec2::new(self_half_size.x, -self_half_size.y).rotated(self.rotation),
-            Vec2::new(-self_half_size.x, self_half_size.y).rotated(self.rotation),
-            Vec2::new(-self_half_size.x, -self_half_size.y).rotated(self.rotation),
+            Vec2f::new(self_half_size.x, self_half_size.y).rotated(self.rotation),
+            Vec2f::new(self_half_size.x, -self_half_size.y).rotated(self.rotation),
+            Vec2f::new(-self_half_size.x, self_half_size.y).rotated(self.rotation),
+            Vec2f::new(-self_half_size.x, -self_half_size.y).rotated(self.rotation),
         ];
 
         let mut min_x = f64::INFINITY;
@@ -74,20 +74,20 @@ impl Transform {
             && max_y > other.position.y - other_half_size.y
     }
 
-    pub fn vertices(&self) -> Vec<Vec2> {
-        let mut vertices: Vec<Vec2> = Vec::new();
+    pub fn vertices(&self) -> Vec<Vec2f> {
+        let mut vertices: Vec<Vec2f> = Vec::new();
         let half_size = &self.size / 2.0;
 
-        let point = &Vec2::new(half_size.x, half_size.y).rotated(self.rotation) + &self.position; // Top right
+        let point = &Vec2f::new(half_size.x, half_size.y).rotated(self.rotation) + &self.position; // Top right
         vertices.push(point);
 
-        let point = &Vec2::new(half_size.x, -half_size.y).rotated(self.rotation) + &self.position; // Bottom right
+        let point = &Vec2f::new(half_size.x, -half_size.y).rotated(self.rotation) + &self.position; // Bottom right
         vertices.push(point);
 
-        let point = &Vec2::new(-half_size.x, -half_size.y).rotated(self.rotation) + &self.position; // Bottom left
+        let point = &Vec2f::new(-half_size.x, -half_size.y).rotated(self.rotation) + &self.position; // Bottom left
         vertices.push(point);
 
-        let point = &Vec2::new(-half_size.x, half_size.y).rotated(self.rotation) + &self.position; // Top left
+        let point = &Vec2f::new(-half_size.x, half_size.y).rotated(self.rotation) + &self.position; // Top left
         vertices.push(point);
 
         vertices
@@ -107,23 +107,23 @@ impl Transform {
         lines
     }
 
-    pub fn normals(&self, vertices: &[Vec2]) -> Vec<Vec2> {
-        let mut normals: Vec<Vec2> = Vec::new();
+    pub fn normals(&self, vertices: &[Vec2f]) -> Vec<Vec2f> {
+        let mut normals: Vec<Vec2f> = Vec::new();
 
         for i in 0..vertices.len() {
             let p1 = &vertices[i];
             let p2 = &vertices[(i + 1) % vertices.len()];
 
-            let edge = Vec2::new(p2.x - p1.x, p2.y - p1.y);
-            let normal = Vec2::new(edge.y, -edge.x).normalize();
+            let edge = Vec2f::new(p2.x - p1.x, p2.y - p1.y);
+            let normal = Vec2f::new(edge.y, -edge.x).normalize();
             normals.push(normal);
         }
 
         normals
     }
 
-    pub fn nearest_edge_to(&self, point: &Vec2) -> (Vec2, Vec2) {
-        let mut nearest_edge: (Vec2, Vec2) = ([0.0, 0.0].into(), [0.0, 0.0].into());
+    pub fn nearest_edge_to(&self, point: &Vec2f) -> (Vec2f, Vec2f) {
+        let mut nearest_edge: (Vec2f, Vec2f) = ([0.0, 0.0].into(), [0.0, 0.0].into());
         let mut nearest_distance = f64::MAX;
 
         for i in 0..self.vertices().len() {
@@ -140,7 +140,7 @@ impl Transform {
         nearest_edge
     }
 
-    fn point_segment_distance(point: &Vec2, seg_point1: &Vec2, seg_point2: &Vec2) -> f64 {
+    fn point_segment_distance(point: &Vec2f, seg_point1: &Vec2f, seg_point2: &Vec2f) -> f64 {
         let a = seg_point1;
         let b = seg_point2;
         let p = point;
@@ -148,7 +148,7 @@ impl Transform {
         let ab = b - a;
         let ap = p - a;
 
-        let t = Vec2::dot(&ap, &ab) / Vec2::dot(&ab, &ab);
+        let t = Vec2f::dot(&ap, &ab) / Vec2f::dot(&ab, &ab);
         let t = max(0.0, min(1.0, t));
 
         let c = a + &(&ab * t);
@@ -156,7 +156,7 @@ impl Transform {
         (p - &c).len()
     }
 
-    fn get_min_max_projection(vertices: &Vec<Vec2>, normal: &Vec2) -> Vec2 {
+    fn get_min_max_projection(vertices: &Vec<Vec2f>, normal: &Vec2f) -> Vec2f {
         let mut min = f64::MAX;
         let mut max = f64::MIN;
 
@@ -171,7 +171,7 @@ impl Transform {
             }
         }
 
-        Vec2::new(min, max)
+        Vec2f::new(min, max)
     }
 }
 

@@ -6,6 +6,13 @@ use web_sys::WebGl2RenderingContext;
 
 static mut TM: Option<Box<TextureManager>> = None;
 
+pub fn tm() -> &'static mut TextureManager {
+    unsafe {
+        TM.as_deref_mut()
+            .expect("Texture manager should be initialized")
+    }
+}
+
 pub struct TextureManager {
     textures: HashMap<String, Texture>,
 }
@@ -26,12 +33,5 @@ impl TextureManager {
                 entry.insert(texture)
             }
         }
-    }
-}
-
-pub fn tm() -> &'static mut TextureManager {
-    unsafe {
-        TM.as_deref_mut()
-            .expect("Shader manager should be initialized")
     }
 }
